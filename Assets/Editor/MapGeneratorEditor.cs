@@ -1,6 +1,8 @@
 ﻿using UnityEditor;
 using AssemblyCSharp;
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace AssemblyCSharpEditor {
 	[CustomEditor(typeof(MapGenerator))]
