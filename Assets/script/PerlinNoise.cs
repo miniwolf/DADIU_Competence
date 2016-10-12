@@ -28,8 +28,8 @@ namespace AssemblyCSharp {
 			float halfWidth = width * .5f;
 			float halfHeight = height * .5f;
 
-			for ( int x = 0; x < height; x++ ) {
-				for ( int y = 0; y < width; y++ ) {
+			for ( int y = 0; y < width; y++ ) {
+				for ( int x = 0; x < height; x++ ) {
 					float amplitude = 1;
 					float frequency = 1;
 					float noiseHeight = 0;
@@ -64,8 +64,8 @@ namespace AssemblyCSharp {
 		/// Normalizes the noise map. To be between 0 and 1
 		/// </summary>
 		private static void NormalizeNoiseMap(float minNoise, float maxNoise, float[,] map) {
-			for ( int x = 0; x < height; x++ ) {
-				for ( int y = 0; y < width; y++ ) {
+			for ( int y = 0; y < width; y++ ) {
+				for ( int x = 0; x < height; x++ ) {
 					map[x,y] = Mathf.InverseLerp(minNoise, maxNoise, map[x,y]);
 				}
 			}

@@ -5,10 +5,9 @@ using System.Collections.Generic;
 namespace AssemblyCSharp {
 	public class MapGenerator : MonoBehaviour {
 		public enum Mode {
-			NoiseMap, ColourMap
+			Mesh, NoiseMap, ColourMap
 		}
 
-		public int width, height;
 		[Tooltip("To be described")]
 		public int octaves;
 		[Tooltip("Will set the random noise to be a specified value. Create unique noise")]
@@ -21,23 +20,30 @@ namespace AssemblyCSharp {
 		public float lacunarity;
 
 		public Vector2 offset;
+		public float meshHeight;
 
 		public bool autoUpdate;
 		public MapDisplay mapDisplay;
 		public Mode mode;
 
-		public ReorderableList<Terrain> regions;
+		public AnimationCurve heightCurve;
+		public Terrain[] regions;
+
+		[Range(1,6)]
+		public int LOD = 1;
+
+		private const int chunkSize = 241;
 
 		public void Generate() {
-			var noiseMap = PerlinNoise.GenerateNoiseMap(width, height, scale, octaves, persistance, lacunarity, offset, seed);
+			var noiseMap = PerlinNoise.GenerateNoiseMap(chunkSize, chunkSize, scale, octaves, persistance, lacunarity, offset, seed);
 
-			var colourMap = new Color[width * height];
-			for ( int x = 0; x < height; x++ ) {
-				for ( int y = 0; y < width; y++ ) {
+			var colourMap = new Color[chunkSize * chunkSize];
+			for ( int y = 0; y < chunkSize; y++ ) {
+				for ( int x = 0; x < chunkSize; x++ ) {
 					float curHeight = noiseMap[x,y];
 					foreach ( Terrain terrain in regions ) {
 						if ( curHeight <= terrain.height ) {
-							colourMap[y * width + x] = terrain.colour;
+							colourMap[y * chunkSize + x] = terrain.colour;
 							break;
 						}
 					}
@@ -45,10 +51,14 @@ namespace AssemblyCSharp {
 			}
 			switch ( mode ) {
 				case Mode.ColourMap:
-					mapDisplay.DrawTexture(TextureGenerator.TextureFromColourMap(colourMap, width, height));
+					mapDisplay.DrawTexture(TextureGenerator.TextureFromColourMap(colourMap, chunkSize, chunkSize));
 					break;
 				case Mode.NoiseMap:
 					mapDisplay.DrawTexture(TextureGenerator.TextureFromHeighMap(noiseMap));
+					break;
+				case Mode.Mesh:
+					var texture = TextureGenerator.TextureFromColourMap(colourMap, chunkSize, chunkSize);
+					mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeight, heightCurve, LOD), texture);
 					break;
 			}
 		}
