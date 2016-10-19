@@ -71,10 +71,10 @@ namespace AssemblyCSharp {
 			}
 		}*/
 
-		public void RequestTerrainData(Action<MapData> callback) {
+		public void RequestTerrainData(Action<MapData> callback, Vector2 center) {
 			var generator = new MapDataGenerator(chunkSize, scale, octaves, persistance, lacunarity, offset, seed, regions);
 			ThreadStart runnable = delegate {
-				generator.MapDataThread(callback, mapThreadInfoQueue);
+				generator.MapDataThread(callback, mapThreadInfoQueue, center);
 			};
 
 			new Thread(runnable).Start();

@@ -5,7 +5,6 @@ namespace AssemblyCSharp {
 	public class TerrainChunk {
 		private GameObject mesh;
 		private Bounds bounds;
-		private MapGenerator generator;
 		private MeshRenderer renderer;
 		private MeshFilter filter;
 		private LODInfo[] LODlevels;
@@ -13,14 +12,14 @@ namespace AssemblyCSharp {
 		private MapData data;
 		private bool receivedMapData;
 		private int prevLODIdx = -1;
+		private Action UpdateChunks;
 
-		public TerrainChunk(Vector2 coord, int size, Transform parent, MapGenerator generator, Material material, LODInfo[] LODlevels) {
+		public TerrainChunk(Vector2 coord, int size, Transform parent, MapGenerator generator, Material material, LODInfo[] LODlevels, System.Action UpdateChunks) {
 			this.LODlevels = LODlevels;
-			this.generator = generator;
-
+			this.UpdateChunks = UpdateChunks;
 			LODmeshes = new LODMesh[LODlevels.Length];
 			for ( int i = 0; i < LODlevels.Length; i++ ) {
-				LODmeshes[i] = new LODMesh(LODlevels[i].LOD, generator);
+				LODmeshes[i] = new LODMesh(LODlevels[i].LOD, generator, UpdateChunks);
 			}
 
 			var pos = coord * size;
@@ -30,7 +29,7 @@ namespace AssemblyCSharp {
 			SetupMesh(parent, material, positionIn3D);
 			SetVisible(false);
 
-			generator.RequestTerrainData(OnMapReceived);
+			generator.RequestTerrainData(OnMapReceived, pos);
 		}
 
 		void SetupMesh(Transform parent, Material material, Vector3 positionIn3D) {
@@ -71,10 +70,10 @@ namespace AssemblyCSharp {
 		private void UpdateMeshLOD(int idx) {
 			if ( idx != prevLODIdx ) {
 				var lodMesh = LODmeshes[idx];
-				if ( lodMesh.hasMesh ) {
+				if ( lodMesh.HasMesh ) {
 					prevLODIdx = idx;
-					filter.mesh = lodMesh.mesh;
-				} else if ( !lodMesh.isRequestedMesh ) {
+					filter.mesh = lodMesh.Mesh;
+				} else if ( !lodMesh.IsRequestedMesh ) {
 					lodMesh.RequestMesh(data);
 				}
 			}
@@ -83,6 +82,10 @@ namespace AssemblyCSharp {
 		public void OnMapReceived(MapData data) {
 			this.data = data;
 			receivedMapData = true;
+
+			Texture2D tex = TextureGenerator.TextureFromColourMap(data.colourMap, MapGenerator.chunkSize, MapGenerator.chunkSize);
+			renderer.material.mainTexture = tex;
+			UpdateChunks();
 			//generator.RequestMeshData(data, OnMeshReceived);
 		}
 

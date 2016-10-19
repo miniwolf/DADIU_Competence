@@ -26,15 +26,15 @@ namespace AssemblyCSharp {
 			this.seed = seed;
 		}
 
-		public void MapDataThread(Action<MapData> callback, Queue<MapThreadInfo<MapData>> infoQueue) {
-			MapData data = GenerateData();
+		public void MapDataThread(Action<MapData> callback, Queue<MapThreadInfo<MapData>> infoQueue, Vector2 center) {
+			MapData data = GenerateData(center);
 			lock (infoQueue) {
 				infoQueue.Enqueue(new MapThreadInfo<MapData>(callback, data));
 			}
 		}
 
-		private MapData GenerateData() {
-			var noiseMap = PerlinNoise.GenerateNoiseMap(chunkSize, chunkSize, scale, octaves, persistance, lacunarity, offset, seed);
+		private MapData GenerateData(Vector2 center) {
+			var noiseMap = PerlinNoise.GenerateNoiseMap(chunkSize, chunkSize, scale, octaves, persistance, lacunarity, center + offset, seed);
 
 			var colourMap = new Color[chunkSize * chunkSize];
 			for ( int y = 0; y < chunkSize; y++ ) {

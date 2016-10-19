@@ -4,9 +4,11 @@ using System.Collections.Generic;
 
 namespace AssemblyCSharp {
 	public class InfinityTerrain : MonoBehaviour {
+		const float moveThreshold = 25f;
+		const float sqrMoveThreshold = moveThreshold * moveThreshold;
+
 		public LODInfo[] detailLevels;
-		public static float maxViewDst = 450;
-		public static Vector2 viewerPos;
+		public static float maxViewDst;
 
 		public Material mapMat;
 
@@ -18,6 +20,8 @@ namespace AssemblyCSharp {
 
 		private Transform viewer;
 		private MapGenerator generator;
+		private Vector2 viewerPos;
+		private Vector2 oldViewerPos;
 
 		void Start() {
 			viewer = GameObject.FindGameObjectWithTag(TagConstants.PLAYER).transform;
@@ -25,11 +29,17 @@ namespace AssemblyCSharp {
 			maxViewDst = detailLevels[detailLevels.Length - 1].visibleThreshold;
 			chunkSize = MapGenerator.chunkSize - 1;
 			chunksVisible = Mathf.RoundToInt(maxViewDst / chunkSize);
+
+			UpdateChunks();
 		}
 
 		void Update() {
 			viewerPos = new Vector2(viewer.position.x, viewer.position.z);
-			UpdateChunks();
+
+			if ( (oldViewerPos - viewerPos).sqrMagnitude > sqrMoveThreshold ) {
+				oldViewerPos = viewerPos;
+				UpdateChunks();
+			}
 		}
 
 		void UpdateChunks() {
@@ -50,7 +60,7 @@ namespace AssemblyCSharp {
 							lastTerrainChunks.Add(terrainChunks[viewedCoord]);
 						}
 					} else {
-						terrainChunks.Add(viewedCoord, new TerrainChunk(viewedCoord, chunkSize, transform, generator, mapMat, detailLevels));
+						terrainChunks.Add(viewedCoord, new TerrainChunk(viewedCoord, chunkSize, transform, generator, mapMat, detailLevels, UpdateChunks));
 					}
 				}	
 			}
