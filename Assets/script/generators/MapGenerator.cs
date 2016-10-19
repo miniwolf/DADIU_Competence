@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -29,43 +30,69 @@ namespace AssemblyCSharp {
 		public AnimationCurve heightCurve;
 		public Terrain[] regions;
 
+		Queue<MapThreadInfo<MapData>> mapThreadInfoQueue = new Queue<MapThreadInfo<MapData>>();
+		Queue<MapThreadInfo<MeshData>> meshThreadInfoQueue = new Queue<MapThreadInfo<MeshData>>();
+
+		public const int chunkSize = 241; // actual mesh is 1 less than this
+
 		[Range(1,6)]
-		public int LOD = 1;
+		public int editorLOD = 1;
 
-		private const int chunkSize = 241;
-
-		public void Generate() {
-			var noiseMap = PerlinNoise.GenerateNoiseMap(chunkSize, chunkSize, scale, octaves, persistance, lacunarity, offset, seed);
-
-			var colourMap = new Color[chunkSize * chunkSize];
-			for ( int y = 0; y < chunkSize; y++ ) {
-				for ( int x = 0; x < chunkSize; x++ ) {
-					float curHeight = noiseMap[x,y];
-					foreach ( Terrain terrain in regions ) {
-						if ( curHeight <= terrain.height ) {
-							colourMap[y * chunkSize + x] = terrain.colour;
-							break;
-						}
-					}
+		void Update() {
+			if ( mapThreadInfoQueue.Count > 0 ) {
+				for ( int i = 0; i < mapThreadInfoQueue.Count; i++ ) {
+					var data = mapThreadInfoQueue.Dequeue();
+					data.callback(data.parameter);
 				}
 			}
-			switch ( mode ) {
-				case Mode.ColourMap:
-					mapDisplay.DrawTexture(TextureGenerator.TextureFromColourMap(colourMap, chunkSize, chunkSize));
-					break;
-				case Mode.NoiseMap:
-					mapDisplay.DrawTexture(TextureGenerator.TextureFromHeighMap(noiseMap));
-					break;
-				case Mode.Mesh:
-					var texture = TextureGenerator.TextureFromColourMap(colourMap, chunkSize, chunkSize);
-					mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeight, heightCurve, LOD), texture);
-					break;
+
+			if ( meshThreadInfoQueue.Count > 0 ) {
+				for ( int i = 0; i < meshThreadInfoQueue.Count; i++ ) {
+					var data = meshThreadInfoQueue.Dequeue();
+					data.callback(data.parameter);
+				}
 			}
+		}
+
+		/*public void DrawInEditor() {
+			//MapData data = GenerateData();
+
+			switch ( mode ) {
+			case Mode.ColourMap:
+				mapDisplay.DrawTexture(TextureGenerator.TextureFromColourMap(data.colourMap, chunkSize, chunkSize));
+				break;
+			case Mode.NoiseMap:
+				mapDisplay.DrawTexture(TextureGenerator.TextureFromHeighMap(data.noiseMap));
+				break;
+			case Mode.Mesh:
+				var texture = TextureGenerator.TextureFromColourMap(data.colourMap, chunkSize, chunkSize);
+				//mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(data.noiseMap, meshHeight, heightCurve, LOD), texture);
+				break;
+			}
+		}*/
+
+		public void RequestTerrainData(Action<MapData> callback, Vector2 center) {
+			var generator = new MapDataGenerator(chunkSize, scale, octaves, persistance, lacunarity, offset, seed, regions);
+			ThreadStart runnable = delegate {
+				generator.MapDataThread(callback, mapThreadInfoQueue, center);
+			};
+
+			new Thread(runnable).Start();
+		}
+
+		public void RequestMeshData(MapData data, int lod, Action<MeshData> callback) {
+			var generator = new MeshDataGenerator(meshHeight, heightCurve, lod);
+			ThreadStart runnable = delegate {
+				generator.MeshDataThread(data, callback, meshThreadInfoQueue);
+			};
+
+			new Thread(runnable).Start();
 		}
 
 		public bool IsAutoUpdate() {
 			return autoUpdate;
 		}
+
 	}
 
 	[System.Serializable]
@@ -73,5 +100,25 @@ namespace AssemblyCSharp {
 		public string name;
 		public float height;
 		public Color colour;
+	}
+
+	public struct MapData {
+		public readonly float[,] noiseMap;
+		public readonly Color[] colourMap;
+
+		public MapData(float[,] noiseMap, Color[] colourMap) {
+			this.noiseMap = noiseMap;
+			this.colourMap = colourMap;
+		}
+	}
+
+	public struct MapThreadInfo<T> {
+		public readonly Action<T> callback;
+		public readonly T parameter;
+
+		public MapThreadInfo(Action<T> callback, T parameter) {
+			this.callback = callback;
+			this.parameter = parameter;
+		}
 	}
 }
