@@ -13,7 +13,7 @@ namespace AssemblyCSharp {
 		private MapData data;
 		private bool receivedMapData;
 		private int prevLODIdx = -1;
-		private Action UpdateChunks;
+		private System.Action UpdateChunks;
 
 		public TerrainChunk(Vector2 coord, int size, Transform parent, MapGenerator generator, Material material, LODInfo[] LODlevels, System.Action UpdateChunks) {
 			this.LODlevels = LODlevels;
@@ -35,6 +35,7 @@ namespace AssemblyCSharp {
 
 		void SetupMesh(Transform parent, Material material, Vector3 positionIn3D) {
 			mesh = new GameObject("Terrain chunk");
+			mesh.isStatic = true;
 			renderer = mesh.AddComponent<MeshRenderer>();
 			renderer.material = material;
 			filter = mesh.AddComponent<MeshFilter>();
