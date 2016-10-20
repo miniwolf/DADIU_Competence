@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class TreeAssetManager : MonoBehaviour, StaticAssetManager {
 
-	[Range(1, 999), Tooltip("Tree density. Effects visible after you re-generate map")]
+	[Range(1, 9999), Tooltip("Tree density. Effects visible after you re-generate map")]
 	public int treeDensity = 1;
 
 	private IList used = new ArrayList();
@@ -20,6 +20,9 @@ public class TreeAssetManager : MonoBehaviour, StaticAssetManager {
 
 	private int cntAllocated, cntRecycled;
 
+	AnimationCurve animCurve;
+	float meshHeight;
+
 	// Use this for initialization
 	void Start() {
 	}
@@ -29,12 +32,10 @@ public class TreeAssetManager : MonoBehaviour, StaticAssetManager {
 	
 	}
 
-	public void Init(AssemblyCSharp.Terrain[] terrains) {
+	public void Init(AssemblyCSharp.Terrain[] terrains, AnimationCurve animCurve, float meshHeight) {
 
-		cntAllocated = 0;
-		cntRecycled = 0;
-		physicsHitDown = 0;
-		physicsHitUp = 0;
+		this.animCurve = animCurve;
+		this.meshHeight = meshHeight;
 
 		used = new ArrayList();
 		free = new ArrayList();
@@ -43,8 +44,11 @@ public class TreeAssetManager : MonoBehaviour, StaticAssetManager {
 			// todo we can use TagConstants here
 			// This code assumes that terrains is sorted from min height to max height, there are 2 types of grass and grass is not the first one in the array (otherwise terrains[i-1] fails)
 			if( terrains[i].name.ToLower().Contains("grass") ) { 
-				grassMinHeight = terrains[i - 1].height; // height of what is before grass
+				grassMinHeight = terrains[i].height; 
 				grassMaxHeight = terrains[i + 1].height; // second grass element
+
+				Debug.Log("grassMinHeight: " + grassMinHeight + ", grassMaxHeight: " + grassMaxHeight);
+
 				break;
 			}
 		}
@@ -57,92 +61,90 @@ public class TreeAssetManager : MonoBehaviour, StaticAssetManager {
 	//	int attempts = 0, hits = 0;
 
 	public void NewPointOfInterest(float normalizedHeight, Vector3 newPos) {
-//		attempts++;
-		if( Random.Range(0, 50) == 0 )
-			if( normalizedHeight >= grassMinHeight && normalizedHeight <= grassMaxHeight ) {
-				free.Add(newPos);
-	//			Debug.Log("Attempts: " + attempts + " hits: " + hits);
-			}
+		if( normalizedHeight >= grassMinHeight && normalizedHeight <= grassMaxHeight ) {
+			free.Add(newPos);
+		}
 	}
 
 	public void NewPointOfInterest(float normalizedHeight, int x, int y, AnimationCurve heightCurve, float heightMutliplier) {
 //		// Getting centered vertices
-		float topLeftX = ( 241 - 1 ) * -.5f; 
-		float topLeftZ = ( 241 - 1 ) * .5f; 
-		float param = 10f;
-		NewPointOfInterest(normalizedHeight, new Vector3(( topLeftX + x ) * param, heightCurve.Evaluate(normalizedHeight) * heightMutliplier, ( topLeftZ - y ) * param));
+//		float topLeftX = ( 241 - 1 ) * -.5f; 
+//		float topLeftZ = ( 241 - 1 ) * .5f; 
+//		float param = 10f;
+//		NewPointOfInterest(normalizedHeight, new Vector3(( topLeftX + x ) * param, heightCurve.Evaluate(normalizedHeight) * heightMutliplier, ( topLeftZ - y ) * param));
 	}
 
 	/// <summary>
 	/// When the map is rendered, calculate the position of the trees and display
 	/// </summary>
 	public void OnMapRendered(AssemblyCSharp.MapData info) {
+		Debug.Log("OnMapRendered, offset: " + info.offset +
+		", info.colourMap: " + info.colourMap.GetLength(0) +
+		", info.noiseMap: " + info.noiseMap.GetLength(0));
+
+		int width = info.noiseMap.GetLength(0);
+		int height = info.noiseMap.GetLength(1);
+
+		// Getting centered vertices
+		float topLeftX = ( width - 1 ) * -.5f; 
+		float topLeftZ = ( height - 1 ) * .5f; // Opposite direction in the z direction
+		float param = 1f;
+		var r = new System.Random();
+
+		for( int y = 0; y < height; y++ ) {
+			for( int x = 0; x < width; x++ ) {
+//				if( r.Next(100) == 0 )
+					NewPointOfInterest(info.noiseMap[x, y], 
+						new Vector3(( topLeftX + x ) * param, 
+							animCurve.Evaluate(info.noiseMap[x, y]) * meshHeight, 
+							( topLeftZ - y ) * param)
+					);
+			}
+		}
+
 //		Debug.Log("Start_Render stats: Allocated: " + cntAllocated + ", recycled: " + cntRecycled + ", treeStorageSize: " + trees.Count);
 
 		if( treeTemplate == null ) // renderred for the first time, no trees on the scene
 			treeTemplate = GameObject.FindGameObjectWithTag(AssemblyCSharp.TagConstants.TREE_TEMPLATE);
-		else {
-			// recycle existing trees
-			GameObject[] existingTrees = GameObject.FindGameObjectsWithTag(TAG);
-
-			if( existingTrees == null || existingTrees.Length == 0 ) { // all trees were most likely removed from scene manually
-				trees = new Stack<GameObject>();
-			} else
-				foreach( GameObject o in existingTrees ) {
-//				DestroyImmediate(o);
-					o.SetActive(false);
-					trees.Push(o);
-				}
-		}
 //		Debug.Log("Middle_Render stats: Allocated: " + cntAllocated + ", recycled: " + cntRecycled + ", treeStorageSize: " + trees.Count);
+//		Debug.Log("Free plant points: " + free.Count);
 
-//		trees = new HashSet<GameObject>()
-//
-//		if( true )
-//			return;
-
-		Debug.Log("Free plant points: " + free.Count);
-
-		for( int i = 0; i < free.Count; i += ( 1000 - treeDensity ) ) {
+		for( int i = 0; i < free.Count; i += ( 10000 - treeDensity ) ) {
 			GameObject g = GetObject();
 			RandomizeTree(g);
 
 			Vector3 freePos = (Vector3)free[Random.Range(0, free.Count)];
+
+			freePos.x += info.offset.x;
+			freePos.z += info.offset.y;
+
 			freePos.x += Random.Range(-1, 1);
 			freePos.z += Random.Range(-1, 1);
 
 			RaycastHit hit;
 
 			// sometimes the freePos is wrong - is above or below the mesh
-			if( Physics.Raycast(freePos, -Vector3.up, out hit, 100) ) {
-				freePos = hit.point;
-				physicsHitUp++;
-//				g.transform.position = freePos;
-			} else if( Physics.Raycast(freePos, -Vector3.down, out hit, 100) ) {
-				freePos = hit.point;
-				physicsHitDown++;
+//			if( Physics.Raycast(freePos, -Vector3.up, out hit, 1000) ) {
+//				freePos = hit.point;
+//				physicsHitUp++;
+////				g.transform.position = freePos;
+//			} else if( Physics.Raycast(freePos, -Vector3.down, out hit, 1000) ) {
+//				freePos = hit.point;
+//				physicsHitDown++;
 //			} else {
 //								g.transform.position = freePos;
 //				g.SetActive(false);
 //				trees.Push(g);
-			}
+//			}
 
 			g.transform.position = freePos;
-
-
-
-
-//			Vector3 pos = (Vector3)free[Random.Range(0, free.Count)];
-//			GameObject g = GetObject();
-//			g.transform.position = pos;
-//			g.tag = TAG;
 		}
 
-		Debug.Log("End_Render stats: Allocated: " + cntAllocated +
-		", recycled: " + cntRecycled +
-		", treeStorageSize: " + trees.Count +
-		", hitUp: " + physicsHitUp +
-		", hitDown: " + physicsHitDown);
+//		Debug.Log("End_Render stats: Allocated: " + cntAllocated +
+//		", recycled: " + cntRecycled +
+//		", treeStorageSize: " + trees.Count +
+//		", hitUp: " + physicsHitUp +
+//		", hitDown: " + physicsHitDown);
 	}
 
 	void RandomizeTree(GameObject g) {
@@ -154,18 +156,17 @@ public class TreeAssetManager : MonoBehaviour, StaticAssetManager {
 	private GameObject GetObject() {
 		GameObject g;
 		if( trees.Count > 0 ) {
-			cntRecycled++;
 			g = trees.Pop();
 			g.SetActive(true);
 		} else {
-//			cntAllocated++;
 //			g = GameObject.CreatePrimitive(PrimitiveType.Cube);
-//			g.AddComponent<Rigidbody>();
 //			Vector3 gScale = g.transform.localScale;
 //			gScale.y *= 5;
 //			g.transform.localScale = gScale;
 
 			g = (GameObject)Instantiate(treeTemplate);
+
+			g.transform.parent = transform;
 			g.tag = TAG;
 		}
 

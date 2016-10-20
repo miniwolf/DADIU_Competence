@@ -13,7 +13,7 @@ public class RockAssetManager : MonoBehaviour, StaticAssetManager {
 	
 	}
 
-	public void Init(AssemblyCSharp.Terrain[] terrains) {
+	public void Init(AssemblyCSharp.Terrain[] terrains, AnimationCurve animCurve, float meshHeight) {
 
 	}
 

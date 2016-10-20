@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 namespace AssemblyCSharp {
 	public static class MeshDataGenerator {
-		public static void MeshDataThread(MapData mapData, float meshHeight, AnimationCurve heightCurve, int LOD, Action<MeshData> callback, Queue<MapThreadInfo<MeshData>> infoQueue, Queue<AssetInfo> assetInfoQueue) {
-			MeshData meshData = GenerateData(mapData.noiseMap, meshHeight, heightCurve, LOD, assetInfoQueue);
+		public static void MeshDataThread(MapData mapData, float meshHeight, AnimationCurve heightCurve, int LOD, Action<MeshData> callback, Queue<MapThreadInfo<MeshData>> infoQueue) {
+			MeshData meshData = GenerateData(mapData.noiseMap, meshHeight, heightCurve, LOD);
 			lock( infoQueue ) {
 				infoQueue.Enqueue(new MapThreadInfo<MeshData>(callback, meshData));
 			}
 		}
 
-		public static MeshData GenerateData(float[,] map, float meshHeight, AnimationCurve heightCurve, int LOD, Queue<AssetInfo> assetInfoQueue) {
+		public static MeshData GenerateData(float[,] map, float meshHeight, AnimationCurve heightCurve, int LOD) {
 			var curve = new AnimationCurve(heightCurve.keys);
 			int width = map.GetLength(0);
 			int height = map.GetLength(1);
@@ -37,18 +37,6 @@ namespace AssemblyCSharp {
 					}
 
 					vertexIndex++;
-				}
-			}
-
-			for( int y = 0; y < height; y++ ) {
-				for( int x = 0; x < width; x++ ) {
-					var ass = new AssetInfo();
-					ass.normalizedHeight = map[x, y];
-					ass.point = new Vector3(topLeftX + x, curve.Evaluate(map[x, y]) * meshHeight, topLeftZ - y);
-
-					lock( assetInfoQueue ) {
-						assetInfoQueue.Enqueue(ass);
-					}
 				}
 			}
 

@@ -40,7 +40,6 @@ namespace AssemblyCSharp {
 
 		private Queue<MapThreadInfo<MapData>> mapThreadInfoQueue = new Queue<MapThreadInfo<MapData>>();
 		private Queue<MapThreadInfo<MeshData>> meshThreadInfoQueue = new Queue<MapThreadInfo<MeshData>>();
-		private Queue<AssetInfo> assetInfoQueue = new Queue<AssetInfo>();
 
 		private StaticAssetManager[] assetManagers;
 		private List<MapChangeListener> mapChangeListeners = new List<MapChangeListener>();
@@ -54,24 +53,12 @@ namespace AssemblyCSharp {
 
 		void Update() {
 
-			if( assetInfoQueue.Count > 1 ) {
-				lock( assetInfoQueue ) {
-					Debug.Log("assetInfoQueue.Count: " + assetInfoQueue.Count);
-					for( int i = 0; i < assetInfoQueue.Count; i++ ) {
-						AssetInfo data = assetInfoQueue.Dequeue();
-						foreach( StaticAssetManager sam in assetManagers ) {
-							sam.NewPointOfInterest(data.normalizedHeight, data.point);
-						}
-					}
-				}
-			}
-
 			if( mapThreadInfoQueue.Count > 0 ) {
 				for( int i = 0; i < mapThreadInfoQueue.Count; i++ ) {
 					var data = mapThreadInfoQueue.Dequeue();
-					data.callback(data.parameter);
+					data.callback(data.parameter); // 
 					foreach( MapChangeListener l in mapChangeListeners ) {
-						l.OnMapRendered(data.parameter);
+						l.OnMapRendered(data.parameter); 
 					}
 				}
 			}
@@ -96,7 +83,7 @@ namespace AssemblyCSharp {
 				mapDisplay.DrawTexture(TextureGenerator.TextureFromHeighMap(data.noiseMap));
 				break;
 			case Mode.Mesh:
-				var meshData = MeshDataGenerator.GenerateData(data.noiseMap, meshHeight, heightCurve, editorLOD, assetInfoQueue);
+				var meshData = MeshDataGenerator.GenerateData(data.noiseMap, meshHeight, heightCurve, editorLOD);
 				mapDisplay.DrawMesh(meshData, texture);
 				break;
 			}
@@ -112,7 +99,7 @@ namespace AssemblyCSharp {
 
 		public void RequestMeshData(MapData data, int lod, Action<MeshData> callback) {
 			ThreadStart runnable = delegate {
-				MeshDataGenerator.MeshDataThread(data, meshHeight, heightCurve, lod, callback, meshThreadInfoQueue, assetInfoQueue);
+				MeshDataGenerator.MeshDataThread(data, meshHeight, heightCurve, lod, callback, meshThreadInfoQueue);
 			};
 
 			new Thread(runnable).Start();
@@ -127,7 +114,7 @@ namespace AssemblyCSharp {
 
 			mapChangeListeners.AddRange(assetManagers);
 			foreach( StaticAssetManager manager in assetManagers ) {
-				manager.Init(regions);
+				manager.Init(regions, heightCurve, meshHeight);
 			}
 		}
 	}
@@ -142,9 +129,9 @@ namespace AssemblyCSharp {
 	public struct MapData {
 		public readonly float[,] noiseMap;
 		public readonly Color[] colourMap;
-		public readonly float offset;
+		public readonly Vector2 offset;
 
-		public MapData (float[,] noiseMap, Color[] colourMap, float offset) {
+		public MapData (float[,] noiseMap, Color[] colourMap, Vector2 offset) {
 			this.noiseMap = noiseMap;
 			this.colourMap = colourMap;
 			this.offset = offset;
@@ -161,9 +148,9 @@ namespace AssemblyCSharp {
 		}
 	}
 
-	public struct AssetInfo {
-		public Vector3 point;
-		public float normalizedHeight;
-	}
+//	public struct AssetInfo {
+//		public Vector3 point;
+//		public float normalizedHeight;
+//	}
 
 }

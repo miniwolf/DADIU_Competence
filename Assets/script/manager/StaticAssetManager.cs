@@ -10,7 +10,7 @@ public interface StaticAssetManager : MapChangeListener {
 	/// Provide terrains so the Manager can be initialized with proper values
 	/// </summary>
 	/// <param name="terrains">Terrains.</param>
-	void Init(AssemblyCSharp.Terrain[] terrains);
+	void Init(AssemblyCSharp.Terrain[] terrains, AnimationCurve animCurve, float meshHeight);
 
 	/// <summary>
 	/// When player position is updated, recycle invisible objects from the scene and possibly place them in the new location
