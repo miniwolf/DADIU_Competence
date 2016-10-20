@@ -10,12 +10,12 @@ namespace AssemblyCSharpEditor {
 
 			if ( DrawDefaultInspector() ) {
 				if ( generator.IsAutoUpdate() ) {
-					//generator.DrawInEditor();
+					generator.DrawInEditor();
 				}
 			}
 
 			if ( GUILayout.Button("Generate") ) {
-				//generator.DrawInEditor();
+				generator.DrawInEditor();
 			}
 		}
 	}
