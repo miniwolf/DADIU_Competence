@@ -13,12 +13,16 @@ namespace AssemblyCSharp {
 		public int octaves;
 		[Tooltip("Will set the random noise to be a specified value. Create unique noise")]
 		public int seed;
+		public const int chunkSize = 241; // actual mesh is 1 less than this
 		[Range(0,100)]
 		public float scale;
 		[Range(0,1), Tooltip("Will descale the amplitude")]
 		public float persistance;
 		[Range(1,10), Tooltip("Modifies the frequency")]
 		public float lacunarity;
+
+		[Tooltip("Changes the way we set the normalization of heights in our meshes")]
+		public PerlinNoise.NormalizeMode normalizeMode;
 
 		public Vector2 offset;
 		public float meshHeight;
@@ -30,10 +34,9 @@ namespace AssemblyCSharp {
 		public AnimationCurve heightCurve;
 		public Terrain[] regions;
 
-		Queue<MapThreadInfo<MapData>> mapThreadInfoQueue = new Queue<MapThreadInfo<MapData>>();
-		Queue<MapThreadInfo<MeshData>> meshThreadInfoQueue = new Queue<MapThreadInfo<MeshData>>();
+		private Queue<MapThreadInfo<MapData>> mapThreadInfoQueue = new Queue<MapThreadInfo<MapData>>();
+		private Queue<MapThreadInfo<MeshData>> meshThreadInfoQueue = new Queue<MapThreadInfo<MeshData>>();
 
-		public const int chunkSize = 241; // actual mesh is 1 less than this
 
 		[Range(1,6)]
 		public int editorLOD = 1;
@@ -54,36 +57,35 @@ namespace AssemblyCSharp {
 			}
 		}
 
-		/*public void DrawInEditor() {
-			//MapData data = GenerateData();
+		public void DrawInEditor() {
+			var data = MapDataGenerator.GenerateData(new MapDataInfo(Vector2.zero, offset, chunkSize, seed, octaves, persistance, lacunarity, scale, regions, normalizeMode));
+			var texture = TextureGenerator.TextureFromColourMap(data.colourMap, chunkSize, chunkSize);
 
 			switch ( mode ) {
 			case Mode.ColourMap:
-				mapDisplay.DrawTexture(TextureGenerator.TextureFromColourMap(data.colourMap, chunkSize, chunkSize));
+				mapDisplay.DrawTexture(texture);
 				break;
 			case Mode.NoiseMap:
 				mapDisplay.DrawTexture(TextureGenerator.TextureFromHeighMap(data.noiseMap));
 				break;
 			case Mode.Mesh:
-				var texture = TextureGenerator.TextureFromColourMap(data.colourMap, chunkSize, chunkSize);
-				//mapDisplay.DrawMesh(MeshGenerator.GenerateTerrainMesh(data.noiseMap, meshHeight, heightCurve, LOD), texture);
+				var meshData = MeshDataGenerator.GenerateData(data.noiseMap, meshHeight, heightCurve, editorLOD);
+				mapDisplay.DrawMesh(meshData, texture);
 				break;
 			}
-		}*/
+		}
 
 		public void RequestTerrainData(Action<MapData> callback, Vector2 center) {
-			var generator = new MapDataGenerator(chunkSize, scale, octaves, persistance, lacunarity, offset, seed, regions);
 			ThreadStart runnable = delegate {
-				generator.MapDataThread(callback, mapThreadInfoQueue, center);
+				MapDataGenerator.MapDataThread(callback, mapThreadInfoQueue, new MapDataInfo(center, offset, chunkSize, seed, octaves, persistance, lacunarity, scale, regions, normalizeMode));
 			};
 
 			new Thread(runnable).Start();
 		}
 
 		public void RequestMeshData(MapData data, int lod, Action<MeshData> callback) {
-			var generator = new MeshDataGenerator(meshHeight, heightCurve, lod);
 			ThreadStart runnable = delegate {
-				generator.MeshDataThread(data, callback, meshThreadInfoQueue);
+				MeshDataGenerator.MeshDataThread(data, meshHeight, heightCurve, lod, callback, meshThreadInfoQueue);
 			};
 
 			new Thread(runnable).Start();

@@ -3,47 +3,52 @@
 namespace AssemblyCSharp {
 	public static class PerlinNoise {
 		private const float EPSILON = 0.0001f;
-		private static int height, width;
 
-		public static float[,] GenerateNoiseMap(int width, int height, float scale, int octaves, float persistance, float lacunarity, Vector2 offset, int seed) {
-			var map = new float[width, height];
+		public enum NormalizeMode { Local, Global };
 
-			var random = new System.Random(seed);
-			var octaveOffets = new Vector2[octaves];
+		public static float[,] GenerateNoiseMap(MapDataInfo info) {
+			var map = new float[info.chunkSize, info.chunkSize];
 
-			for ( int i = 0; i < octaves; i++ ) {
-				float offsetX = random.Next(-100000, 100000) + offset.x;
-				float offsetY = random.Next(-100000, 100000) + offset.y;
+			var random = new System.Random(info.seed);
+			var octaveOffets = new Vector2[info.octaves];
+
+			float maxHeight = 0;
+			float amplitude = 1;
+			float frequency = 1;
+
+			for ( int i = 0; i < info.octaves; i++ ) {
+				float offsetX = random.Next(-100000, 100000) + info.offset.x;
+				float offsetY = random.Next(-100000, 100000) - info.offset.y;
 				octaveOffets[i] = new Vector2(offsetX, offsetY);
+
+				maxHeight += amplitude;
+				amplitude *= info.persistance;
 			}
 
-			PerlinNoise.height = height;
-			PerlinNoise.width = width;
-
-			Mathf.Clamp(scale, EPSILON, float.MaxValue);
+			Mathf.Clamp(info.scale, EPSILON, float.MaxValue);
 
 			float maxNoise = float.MinValue;
 			float minNoise = float.MaxValue;
 
-			float halfWidth = width * .5f;
-			float halfHeight = height * .5f;
+			float halfWidth = info.chunkSize * .5f;
+			float halfHeight = info.chunkSize* .5f;
 
-			for ( int y = 0; y < width; y++ ) {
-				for ( int x = 0; x < height; x++ ) {
-					float amplitude = 1;
-					float frequency = 1;
+			for ( int y = 0; y < info.chunkSize; y++ ) {
+				for ( int x = 0; x < info.chunkSize; x++ ) {
 					float noiseHeight = 0;
+					amplitude = 1;
+					frequency = 1;
 
-					for ( int i = 0; i < octaves; i++ ) {
+					for ( int i = 0; i < info.octaves; i++ ) {
 						// Higher frequency, further apart sample points
-						float sampleX = (x - halfHeight) / scale * frequency + octaveOffets[i].x;
-						float sampleY = (y - halfWidth) / scale * frequency + octaveOffets[i].y;
+						float sampleX = (x - halfHeight + octaveOffets[i].x) / info.scale * frequency;
+						float sampleY = (y - halfWidth + octaveOffets[i].y) / info.scale * frequency;
 
 						float perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1; // [0,1] -> [-1,1]
 						noiseHeight += perlinValue * amplitude;
 
-						amplitude *= persistance; // persistance [0,1]
-						frequency *= lacunarity; // lacunarity > 1
+						amplitude *= info.persistance; // persistance [0,1]
+						frequency *= info.lacunarity; // lacunarity > 1
 					}
 					if ( noiseHeight > maxNoise ) {
 						maxNoise = noiseHeight;
@@ -55,7 +60,7 @@ namespace AssemblyCSharp {
 				}
 			}
 
-			NormalizeNoiseMap(minNoise, maxNoise, map);
+			NormalizeNoiseMap(info.chunkSize, minNoise, maxNoise, map, info.mode, maxHeight);
 
 			return map;
 	  	}
@@ -63,10 +68,12 @@ namespace AssemblyCSharp {
 		/// <summary>
 		/// Normalizes the noise map. To be between 0 and 1
 		/// </summary>
-		private static void NormalizeNoiseMap(float minNoise, float maxNoise, float[,] map) {
-			for ( int y = 0; y < width; y++ ) {
-				for ( int x = 0; x < height; x++ ) {
-					map[x,y] = Mathf.InverseLerp(minNoise, maxNoise, map[x,y]);
+		private static void NormalizeNoiseMap(float chunkSize, float localMinNoise, float localMaxNoise, float[,] map, NormalizeMode mode, float globalMaxNoise) {
+			for ( int y = 0; y < chunkSize; y++ ) {
+				for ( int x = 0; x < chunkSize; x++ ) {
+					map[x, y] = ( mode == NormalizeMode.Global ) 
+						? Mathf.Clamp((map[x,y] + 1) / (globalMaxNoise / .7f), 0, int.MaxValue)
+						: Mathf.InverseLerp(localMinNoise, localMaxNoise, map[x, y]);
 				}
 			}
 		}

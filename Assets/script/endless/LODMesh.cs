@@ -20,6 +20,8 @@ namespace AssemblyCSharp {
 		private void OnDataReceived(MeshData data) {
 			mesh = data.CreateMesh();
 			hasMesh = true;
+
+			updateCallback();
 		}
 
 		public void RequestMesh(MapData data) {

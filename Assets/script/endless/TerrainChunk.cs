@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace AssemblyCSharp {
@@ -44,7 +45,7 @@ namespace AssemblyCSharp {
 		/// <summary>
 		/// Find closest point on perimeter, enable if inside distance
 		/// </summary>
-		public void UpdateChunk(Vector2 viewerPos, float maxViewDst) {
+		public void UpdateChunk(Vector2 viewerPos, float maxViewDst, List<TerrainChunk> visibleChunks) {
 			if ( !receivedMapData ) {
 				return;
 			}
@@ -63,6 +64,7 @@ namespace AssemblyCSharp {
 				}
 
 				UpdateMeshLOD(idx);
+				visibleChunks.Add(this);
 			}
 			SetVisible(visible);
 		}

@@ -16,11 +16,11 @@ namespace AssemblyCSharp {
 		private int chunksVisible;
 
 		private Dictionary<Vector2, TerrainChunk> terrainChunks = new Dictionary<Vector2, TerrainChunk>();
-		private List<TerrainChunk> lastTerrainChunks = new List<TerrainChunk>();
+		private readonly List<TerrainChunk> lastTerrainChunks = new List<TerrainChunk>();
 
 		private Transform viewer;
 		private MapGenerator generator;
-		private Vector2 viewerPos;
+		private Vector2 viewerPos = Vector2.zero;
 		private Vector2 oldViewerPos;
 
 		void Start() {
@@ -33,6 +33,9 @@ namespace AssemblyCSharp {
 			UpdateChunks();
 		}
 
+		/// <summary>
+		/// From viewer position we update the chunks if we have moved a distanced based on our threshold
+		/// </summary>
 		void Update() {
 			viewerPos = new Vector2(viewer.position.x, viewer.position.z);
 
@@ -42,6 +45,9 @@ namespace AssemblyCSharp {
 			}
 		}
 
+		/// <summary>
+		/// Update chunks within viewable range
+		/// </summary>
 		void UpdateChunks() {
 			HideChunks();
 			lastTerrainChunks.Clear();
@@ -51,20 +57,18 @@ namespace AssemblyCSharp {
 
 			for ( int yOffset = -chunksVisible; yOffset <= chunksVisible; yOffset++ ) {
 				for ( int xOffset = -chunksVisible; xOffset <= chunksVisible; xOffset++ ) {
-					Vector2 viewedCoord = new Vector2(currentX + xOffset, currentY + yOffset);
-
-					if ( terrainChunks.ContainsKey(viewedCoord) ) {
-						// Prevent duplicates
-						terrainChunks[viewedCoord].UpdateChunk(viewerPos, maxViewDst);
-						if ( terrainChunks[viewedCoord].IsVisible() ) {
-							lastTerrainChunks.Add(terrainChunks[viewedCoord]);
-						}
-					} else {
-						terrainChunks.Add(viewedCoord, new TerrainChunk(viewedCoord, chunkSize, transform, generator, mapMat, detailLevels, UpdateChunks));
-					}
+					var viewedCoord = new Vector2(currentX + xOffset, currentY + yOffset);
+					AddOrUpdateChunk(viewedCoord);
 				}	
 			}
+		}
 
+		private void AddOrUpdateChunk(Vector2 viewedCoord) {
+			if ( terrainChunks.ContainsKey(viewedCoord) ) { // Prevent duplicates
+				terrainChunks[viewedCoord].UpdateChunk(viewerPos, maxViewDst, lastTerrainChunks);
+			} else {
+				terrainChunks.Add(viewedCoord, new TerrainChunk(viewedCoord, chunkSize, transform, generator, mapMat, detailLevels, UpdateChunks));
+			}
 		}
 
 		private void HideChunks() {

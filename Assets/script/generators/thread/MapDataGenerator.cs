@@ -3,53 +3,54 @@ using UnityEngine;
 using System.Collections.Generic;
 
 namespace AssemblyCSharp {
-	public class MapDataGenerator {
-		private int seed;
-		private int octaves;
-		private int chunkSize;
-
-		private float lacunarity;
-		private float persistance;
-		private float scale;
-
-		private Vector2 offset;
-		private Terrain[] regions;
-
-		public MapDataGenerator(int chunkSize, float scale, int octaves, float persistance, float lacunarity, Vector2 offset, int seed, Terrain[] regions) {
-			this.regions = regions;
-			this.chunkSize = chunkSize;
-			this.scale = scale;
-			this.octaves = octaves;
-			this.persistance = persistance;
-			this.lacunarity = lacunarity;
-			this.offset = offset;
-			this.seed = seed;
-		}
-
-		public void MapDataThread(Action<MapData> callback, Queue<MapThreadInfo<MapData>> infoQueue, Vector2 center) {
-			MapData data = GenerateData(center);
+	public static class MapDataGenerator {
+		public static void MapDataThread(Action<MapData> callback, Queue<MapThreadInfo<MapData>> infoQueue, MapDataInfo info) {
+			MapData data = GenerateData(info);
 			lock (infoQueue) {
 				infoQueue.Enqueue(new MapThreadInfo<MapData>(callback, data));
 			}
 		}
 
-		private MapData GenerateData(Vector2 center) {
-			var noiseMap = PerlinNoise.GenerateNoiseMap(chunkSize, chunkSize, scale, octaves, persistance, lacunarity, center + offset, seed);
+		public static MapData GenerateData(MapDataInfo info) {
+			var noiseMap = PerlinNoise.GenerateNoiseMap(info);
 
-			var colourMap = new Color[chunkSize * chunkSize];
-			for ( int y = 0; y < chunkSize; y++ ) {
-				for ( int x = 0; x < chunkSize; x++ ) {
+			var colourMap = new Color[info.chunkSize * info.chunkSize];
+			for ( int y = 0; y < info.chunkSize; y++ ) {
+				for ( int x = 0; x < info.chunkSize; x++ ) {
 					float curHeight = noiseMap[x,y];
-					foreach ( Terrain terrain in regions ) {
-						if ( curHeight <= terrain.height ) {
-							colourMap[y * chunkSize + x] = terrain.colour;
+					foreach ( Terrain terrain in info.regions ) {
+						if ( curHeight < terrain.height ) {
 							break;
 						}
+						colourMap[y * info.chunkSize + x] = terrain.colour;
 					}
 				}
 			}
 			return new MapData(noiseMap, colourMap);
 		}
 	}
-}
 
+	public struct MapDataInfo {
+		public Vector2 offset;
+		public int chunkSize;
+		public int seed;
+		public int octaves;
+		public float persistance;
+		public float lacunarity;
+		public float scale;
+		public Terrain[] regions;
+		public PerlinNoise.NormalizeMode mode;
+
+		public MapDataInfo(Vector2 center, Vector2 offset, int chunkSize, int seed, int octaves, float persistance, float lacunarity, float scale, Terrain[] regions, PerlinNoise.NormalizeMode mode) {
+			this.offset = center + offset;
+			this.chunkSize = chunkSize;
+			this.persistance = persistance;
+			this.lacunarity = lacunarity;
+			this.scale = scale;
+			this.seed = seed;
+			this.regions = regions;
+			this.mode = mode;
+			this.octaves = octaves;
+		}
+	}
+}
