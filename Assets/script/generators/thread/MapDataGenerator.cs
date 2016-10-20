@@ -26,7 +26,7 @@ namespace AssemblyCSharp {
 					}
 				}
 			}
-			return new MapData(noiseMap, colourMap);
+			return new MapData(noiseMap, colourMap, info.offset);
 		}
 	}
 
