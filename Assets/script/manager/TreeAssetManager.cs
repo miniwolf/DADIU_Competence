@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class TreeAssetManager : MonoBehaviour, StaticAssetManager {
 
-	[Range(1, 9999), Tooltip("Tree density. Effects visible after you re-generate map")]
+	[Range(1, 9999), Tooltip("Tree density")]
 	public int treeDensity = 1;
 
 	public bool useCubes = false;
@@ -85,6 +85,7 @@ public class TreeAssetManager : MonoBehaviour, StaticAssetManager {
 		Wasabimole.ProceduralTree.ProceduralTree tree = g.GetComponent<Wasabimole.ProceduralTree.ProceduralTree>();
 		tree.BranchProbability = Random.Range(0.1f, 0.25f);
 		tree.MinimumRadius = Random.Range(0.01f, 0.04f);
+		tree.GenerateTree();
 	}
 
 	private GameObject GetObject() {
