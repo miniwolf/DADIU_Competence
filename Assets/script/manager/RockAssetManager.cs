@@ -17,15 +17,7 @@ public class RockAssetManager : MonoBehaviour, StaticAssetManager {
 
 	}
 
-	public void PlayerPositionUpdated(Vector3 newPos) {
-
-	}
-
 	public void NewPointOfInterest(float normalizedHeight, Vector3 newPos) {
-
-	}
-
-	public void NewPointOfInterest(float normalizedHeight, int x, int y, AnimationCurve heightCurve, float height) {
 
 	}
 
