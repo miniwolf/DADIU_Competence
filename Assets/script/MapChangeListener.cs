@@ -3,6 +3,6 @@ using System.Collections;
 
 public interface MapChangeListener {
 
-	void OnMapRendered();
+	void OnMapRendered(AssemblyCSharp.MapData info);
 
 }

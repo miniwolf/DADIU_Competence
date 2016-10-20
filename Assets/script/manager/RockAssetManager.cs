@@ -29,7 +29,7 @@ public class RockAssetManager : MonoBehaviour, StaticAssetManager {
 
 	}
 
-	public void OnMapRendered() {
+	public void OnMapRendered(AssemblyCSharp.MapData info) {
 
 	}
 
