@@ -10,13 +10,13 @@ public class RockAssetManager : MonoBehaviour, StaticAssetManager {
 	public LayerMask mask;
 
 	private IList free = new ArrayList();
-	private float grassMinHeight, grassMaxHeight;
-	private GameObject treeTemplate;
+	private float rockMinHeight, rockMaxHeight;
+	private GameObject template;
 	private	AnimationCurve animCurve;
 	private float meshHeight;
 
 	void Start() {
-		treeTemplate = GameObject.FindGameObjectWithTag(AssemblyCSharp.TagConstants.ROCK_TEMPLATE);
+		template = GameObject.FindGameObjectWithTag(AssemblyCSharp.TagConstants.ROCK_TEMPLATE);
 	}
 
 	public void Init(AssemblyCSharp.Terrain[] terrains, AnimationCurve animCurve, float meshHeight) {
@@ -27,17 +27,16 @@ public class RockAssetManager : MonoBehaviour, StaticAssetManager {
 
 		for( int i = 0; i < terrains.Length; i++ ) {
 			if( terrains[i].name.ToLower().Contains("grass") ) { 
-				grassMinHeight = terrains[i].height; 
+				rockMinHeight = terrains[i].height; 
 				break;
 			}
 		}
 
-		grassMaxHeight = terrains[terrains.Length - 1].height; 
-		Debug.Log("grassMinHeight: " + grassMinHeight + ", grassMaxHeight: " + grassMaxHeight);
+		rockMaxHeight = terrains[terrains.Length - 1].height; 
 	}
 
 	public void NewPointOfInterest(float normalizedHeight, Vector3 newPos) {
-		if( normalizedHeight >= grassMinHeight && normalizedHeight <= grassMaxHeight ) {
+		if( normalizedHeight >= rockMinHeight && normalizedHeight <= rockMaxHeight ) {
 			free.Add(newPos);
 		}
 	}
@@ -63,7 +62,7 @@ public class RockAssetManager : MonoBehaviour, StaticAssetManager {
 		}
 
 		for( int i = 0; i < free.Count; i += ( 10000 - rockDensity ) ) {
-			GameObject g = (GameObject)Instantiate(treeTemplate);
+			GameObject g = (GameObject)Instantiate(template);
 
 			g.transform.parent = transform;
 			g.tag = AssemblyCSharp.TagConstants.TREE_INST;
