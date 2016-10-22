@@ -9,11 +9,10 @@ public class TreeAssetManager : MonoBehaviour, StaticAssetManager {
 
 	public bool useCubes = false;
 
-	private IList free = new ArrayList();
-	private float grassMinHeight, grassMaxHeight;
 	private GameObject treeTemplate;
 	private	AnimationCurve animCurve;
 	private float meshHeight;
+	private AssemblyCSharp.Terrain terrainMin, terrainMax;
 
 	void Start() {
 		treeTemplate = GameObject.FindGameObjectWithTag(AssemblyCSharp.TagConstants.TREE_TEMPLATE);
@@ -23,54 +22,64 @@ public class TreeAssetManager : MonoBehaviour, StaticAssetManager {
 
 		this.animCurve = animCurve;
 		this.meshHeight = meshHeight;
-		free = new ArrayList();
 
 		for( int i = 0; i < terrains.Length; i++ ) {
 			// todo we can use TagConstants here
 			// This code assumes that terrains is sorted from min height to max height, there are 2 types of grass and grass is not the first one in the array (otherwise terrains[i-1] fails)
 			if( terrains[i].name.ToLower().Contains("grass") ) { 
-				grassMinHeight = terrains[i].height; // height of what is before grass
-				grassMaxHeight = terrains[i + 1].height; // second grass element
+				terrainMin = terrains[i]; // height of the first grass
+				terrainMax = terrains[i + 1]; // second grass element
 				break;
 			}
 		}
-	}
 
-	public void NewPointOfInterest(float normalizedHeight, Vector3 newPos) {
-		if( normalizedHeight >= grassMinHeight && normalizedHeight <= grassMaxHeight ) {
-			free.Add(newPos);
-		}
+//		Debug.Log("Grass heights: min: " + terrainMin.height + ", max: " + terrainMax.height);
 	}
 
 	/// <summary>
 	/// When the map chunk is rendered, calculate the position of the trees and display
 	/// </summary>
 	public void OnMapRendered(AssemblyCSharp.MapData info) {
+
+		IList emptyPositions = new ArrayList();
+
 		int width = info.noiseMap.GetLength(0);
 		int height = info.noiseMap.GetLength(1);
 
+		// this is stolen from MeshDataGenerator script
 		float topLeftX = ( width - 1 ) * -.5f; 
 		float topLeftZ = ( height - 1 ) * .5f;
 
+		// check all points from generated chunk 
 		for( int y = 0; y < height; y++ ) {
 			for( int x = 0; x < width; x++ ) {
-				NewPointOfInterest(info.noiseMap[x, y], 
-					new Vector3(( topLeftX + x ), 
-						animCurve.Evaluate(info.noiseMap[x, y]) * meshHeight, 
-						( topLeftZ - y ))
-				);
+
+				float normalizedHeight = info.noiseMap[x, y];
+				if( normalizedHeight >= terrainMin.height && normalizedHeight <= terrainMax.height ) { // we are interested in given height
+
+					// sanity check if the given point is in the correct terrain color
+					Color currentColor = info.colourMap[y * width + x];
+					if( currentColor == terrainMin.colour || currentColor == terrainMax.colour ) { 
+						emptyPositions.Add(new Vector3(( topLeftX + x ), 
+							animCurve.Evaluate(info.noiseMap[x, y]) * meshHeight, 
+							( topLeftZ - y )));
+					}
+				}
 			}
 		}
 			
-		for( int i = 0; i < free.Count; i += ( 10000 - treeDensity ) ) {
+		for( int i = 0; i < emptyPositions.Count; i += ( 10000 - treeDensity ) ) {
 			GameObject g = GetObject();
 			RandomizeTree(g);
 
-			Vector3 freePos = (Vector3)free[Random.Range(0, free.Count)];
+			Vector3 freePos = (Vector3)emptyPositions[Random.Range(0, emptyPositions.Count)];
+			emptyPositions.Remove(freePos);
 
-			freePos.x += info.offset.x;
+			// apply terrain chunk offset
+			freePos.x += info.offset.x; 
 			freePos.z += info.offset.y;
 
+			// add a bit of randomness, so objects are not planted on the grid
 			freePos.x += Random.Range(-1, 1);
 			freePos.z += Random.Range(-1, 1);
 
@@ -96,13 +105,10 @@ public class TreeAssetManager : MonoBehaviour, StaticAssetManager {
 			Vector3 gScale = g.transform.localScale;
 			gScale.y *= 5;
 			g.transform.localScale = gScale;
-//			g.AddComponent<Rigidbody>();
-//			g.AddComponent<MeshCollider>();
 		} else {
 			g = (GameObject)Instantiate(treeTemplate);
 		}
-
-
+			
 		g.transform.parent = transform;
 		g.tag = AssemblyCSharp.TagConstants.TREE_INST;
 
