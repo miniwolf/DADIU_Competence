@@ -96,6 +96,8 @@ public class TreeAssetManager : MonoBehaviour, StaticAssetManager {
 			Vector3 gScale = g.transform.localScale;
 			gScale.y *= 5;
 			g.transform.localScale = gScale;
+//			g.AddComponent<Rigidbody>();
+//			g.AddComponent<MeshCollider>();
 		} else {
 			g = (GameObject)Instantiate(treeTemplate);
 		}
