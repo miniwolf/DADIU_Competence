@@ -4,7 +4,7 @@ using System.Collections;
 [RequireComponent(typeof(CharacterController))]
 public class Player: MonoBehaviour {
 
-	public float runSpeed = 11.0f;
+	public float runSpeed = 3.0f;
 
 	public enum RotationAxes {
 		MouseXAndY = 0,
@@ -24,35 +24,17 @@ public class Player: MonoBehaviour {
 
 	float rotationY = 0F;
 
-
 	void Update() {
-		// todo switch()
 		// part 1 - move character
-		if( Input.GetKey(KeyCode.RightArrow) ) {
-			transform.Translate(new Vector3(runSpeed * Time.deltaTime, 0, 0));
-		} else if( Input.GetKey(KeyCode.LeftArrow) ) {
-			transform.Translate(new Vector3(-runSpeed * Time.deltaTime, 0, 0));
-		} else if( Input.GetKey(KeyCode.DownArrow) ) {
-			transform.Translate(new Vector3(0, 0, -runSpeed * Time.deltaTime));
-		} else if( Input.GetKey(KeyCode.UpArrow) ) {
-			transform.Translate(new Vector3(0, 0, runSpeed * Time.deltaTime));
-		}
-
-		// part 2 - rotate camera 
-		if( axes == RotationAxes.MouseXAndY ) {
-			float rotationX = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * sensitivityX;
-
-			rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
-			rotationY = Mathf.Clamp(rotationY, minimumY, maximumY);
-
-			transform.localEulerAngles = new Vector3(-rotationY, rotationX, 0);
-		} else if( axes == RotationAxes.MouseX ) {
-			transform.Rotate(0, Input.GetAxis("Mouse X") * sensitivityX, 0);
-		} else {
-			rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
-			rotationY = Mathf.Clamp(rotationY, minimumY, maximumY);
-
-			transform.localEulerAngles = new Vector3(-rotationY, transform.localEulerAngles.y, 0);
+		float change = runSpeed * Time.deltaTime;
+		if( Input.GetKey(KeyCode.D) ) {
+			transform.Translate(new Vector3(change, 0, 0));
+		} else if( Input.GetKey(KeyCode.A) ) {
+			transform.Translate(new Vector3(-change, 0, 0));
+		} else if( Input.GetKey(KeyCode.S) ) {
+			transform.Translate(new Vector3(0, 0, -change));
+		} else if( Input.GetKey(KeyCode.W) ) {
+			transform.Translate(new Vector3(0, 0, change));
 		}
 	}
 }
