@@ -1,24 +1,28 @@
 ﻿using System;
 using System.Threading;
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace AssemblyCSharp {
 	public class MapGenerator : MonoBehaviour {
 		public enum Mode {
-			Mesh, NoiseMap, ColourMap
+			Mesh,
+			NoiseMap,
+			ColourMap
 		}
 
 		[Tooltip("To be described")]
 		public int octaves;
 		[Tooltip("Will set the random noise to be a specified value. Create unique noise")]
 		public int seed;
-		public const int chunkSize = 241; // actual mesh is 1 less than this
-		[Range(0,100)]
+		public const int chunkSize = 241;
+		// actual mesh is 1 less than this
+		[Range(0, 100)]
 		public float scale;
-		[Range(0,1), Tooltip("Will descale the amplitude")]
+		[Range(0, 1), Tooltip("Will descale the amplitude")]
 		public float persistance;
-		[Range(1,10), Tooltip("Modifies the frequency")]
+		[Range(1, 10), Tooltip("Modifies the frequency")]
 		public float lacunarity;
 
 		[Tooltip("Changes the way we set the normalization of heights in our meshes")]
@@ -37,22 +41,32 @@ namespace AssemblyCSharp {
 		private Queue<MapThreadInfo<MapData>> mapThreadInfoQueue = new Queue<MapThreadInfo<MapData>>();
 		private Queue<MapThreadInfo<MeshData>> meshThreadInfoQueue = new Queue<MapThreadInfo<MeshData>>();
 
+		private StaticAssetManager[] assetManagers;
+		private List<MapChangeListener> mapChangeListeners = new List<MapChangeListener>();
 
-		[Range(1,6)]
+		[Range(1, 6)]
 		public int editorLOD = 1;
 
+		void Start() {
+			InitAssetManagers();
+		}
+
 		void Update() {
-			if ( mapThreadInfoQueue.Count > 0 ) {
-				for ( int i = 0; i < mapThreadInfoQueue.Count; i++ ) {
+
+			if( mapThreadInfoQueue.Count > 0 ) {
+				for( int i = 0; i < mapThreadInfoQueue.Count; i++ ) {
 					var data = mapThreadInfoQueue.Dequeue();
-					data.callback(data.parameter);
+					data.callback(data.parameter); // 
+					foreach( MapChangeListener l in mapChangeListeners ) {
+						l.OnMapRendered(data.parameter); 
+					}
 				}
 			}
 
-			if ( meshThreadInfoQueue.Count > 0 ) {
-				for ( int i = 0; i < meshThreadInfoQueue.Count; i++ ) {
+			if( meshThreadInfoQueue.Count > 0 ) {
+				for( int i = 0; i < meshThreadInfoQueue.Count; i++ ) {
 					var data = meshThreadInfoQueue.Dequeue();
-					data.callback(data.parameter);
+					data.callback(data.parameter); // TerrainChunk.OnMapReceived
 				}
 			}
 		}
@@ -61,7 +75,7 @@ namespace AssemblyCSharp {
 			var data = MapDataGenerator.GenerateData(new MapDataInfo(Vector2.zero, offset, chunkSize, seed, octaves, persistance, lacunarity, scale, regions, normalizeMode));
 			var texture = TextureGenerator.TextureFromColourMap(data.colourMap, chunkSize, chunkSize);
 
-			switch ( mode ) {
+			switch( mode ) {
 			case Mode.ColourMap:
 				mapDisplay.DrawTexture(texture);
 				break;
@@ -95,6 +109,14 @@ namespace AssemblyCSharp {
 			return autoUpdate;
 		}
 
+		void InitAssetManagers() {
+			assetManagers = GameObject.FindGameObjectWithTag(TagConstants.ASSET_MANAGER).GetComponentsInChildren<StaticAssetManager>();
+
+			mapChangeListeners.AddRange(assetManagers);
+			foreach( StaticAssetManager manager in assetManagers ) {
+				manager.Init(regions, heightCurve, meshHeight);
+			}
+		}
 	}
 
 	[System.Serializable]
@@ -107,10 +129,12 @@ namespace AssemblyCSharp {
 	public struct MapData {
 		public readonly float[,] noiseMap;
 		public readonly Color[] colourMap;
+		public readonly Vector2 offset;
 
-		public MapData(float[,] noiseMap, Color[] colourMap) {
+		public MapData (float[,] noiseMap, Color[] colourMap, Vector2 offset) {
 			this.noiseMap = noiseMap;
 			this.colourMap = colourMap;
+			this.offset = offset;
 		}
 	}
 
@@ -118,9 +142,15 @@ namespace AssemblyCSharp {
 		public readonly Action<T> callback;
 		public readonly T parameter;
 
-		public MapThreadInfo(Action<T> callback, T parameter) {
+		public MapThreadInfo (Action<T> callback, T parameter) {
 			this.callback = callback;
 			this.parameter = parameter;
 		}
 	}
+
+//	public struct AssetInfo {
+//		public Vector3 point;
+//		public float normalizedHeight;
+//	}
+
 }

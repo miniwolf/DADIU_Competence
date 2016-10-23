@@ -17,6 +17,7 @@ namespace AssemblyCSharp {
 
 		private Dictionary<Vector2, TerrainChunk> terrainChunks = new Dictionary<Vector2, TerrainChunk>();
 		private readonly List<TerrainChunk> lastTerrainChunks = new List<TerrainChunk>();
+//		private List<MapChangeListener> mapChangeListeners = new List<MapChangeListener>();
 
 		private Transform viewer;
 		private MapGenerator generator;
@@ -30,6 +31,7 @@ namespace AssemblyCSharp {
 			chunkSize = MapGenerator.chunkSize - 1;
 			chunksVisible = Mathf.RoundToInt(maxViewDst / chunkSize);
 
+//			GetMapChangeListeners();
 			UpdateChunks();
 		}
 
@@ -61,6 +63,12 @@ namespace AssemblyCSharp {
 					AddOrUpdateChunk(viewedCoord);
 				}	
 			}
+
+//			Debug.Log("Updating chuks, mapChangeListeners: " + mapChangeListeners.Count);
+//
+//			foreach( MapChangeListener l in mapChangeListeners ) {
+//				l.OnMapRendered();
+//			}
 		}
 
 		private void AddOrUpdateChunk(Vector2 viewedCoord) {
@@ -76,6 +84,11 @@ namespace AssemblyCSharp {
 				lastTerrainChunks[i].SetVisible(false);
 			}
 		}
+
+//		void GetMapChangeListeners() {
+//			StaticAssetManager[] assetManagers = GameObject.FindGameObjectWithTag(TagConstants.ASSET_MANAGER).GetComponentsInChildren<StaticAssetManager>();
+//			mapChangeListeners.AddRange(assetManagers);
+//		}
 	}
 
 	[System.Serializable]
