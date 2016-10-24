@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace AssemblyCSharp {
+namespace Assets.script.controllers.actions {
 	/// <summary>
 	/// The controller is responsible for response control
 	/// </summary>

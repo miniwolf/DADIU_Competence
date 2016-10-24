@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace AssemblyCSharp {
+﻿namespace Assets.script.controllers {
 	public enum ControllableActions {
-		MOVE, STOP
+		Move, Stop, Flee, Roam
 	}
 }
 

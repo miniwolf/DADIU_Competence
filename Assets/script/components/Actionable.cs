@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Assets.script.controllers;
+using Assets.script.controllers.handlers;
 
-namespace AssemblyCSharp {
+namespace Assets.script.components {
 	public interface Actionable {
 		/// <summary>
 		/// Adds the action along with the handler that will be executed when the command pattern invoker is called.

@@ -1,9 +1,9 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using Assets.script.controllers.actions;
+using UnityEngine;
+using Action = Assets.script.controllers.actions.Action;
 
-namespace AssemblyCSharp {
-	using UnityEngine;
-	using System.Collections.Generic;
-
+namespace Assets.script.controllers.handlers {
 	public class MouseMoveHandler : Handler {
 		private LayerMask layerMask;// = 1 << LayerConstants.GroundLayer;
 		private RaycastHit hit;
@@ -18,10 +18,10 @@ namespace AssemblyCSharp {
 		}
 
 		public void SetupComponents(GameObject obj) {
-			foreach ( MoveAction action in moveActions ) {
+			foreach ( var action in moveActions ) {
 				action.Setup(obj);
 			}
-			foreach ( Action action in actions ) {
+			foreach ( var action in actions ) {
 				action.Setup(obj);
 			}
 		}

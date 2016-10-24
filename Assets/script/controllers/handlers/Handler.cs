@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using Assets.script.controllers.actions;
+using UnityEngine;
 
-namespace AssemblyCSharp {
+namespace Assets.script.controllers.handlers {
 	public interface Handler {
 		/// <summary>
 		/// Setups the components. Called from the script that has a list of handlers

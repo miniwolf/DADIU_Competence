@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿
+using UnityEngine;
 
-namespace AssemblyCSharp {
+namespace Assets.script.controllers.actions.movement {
 	public class MoveActionImpl : MoveAction {
 		private NavMeshAgent agent;
 
@@ -15,7 +16,7 @@ namespace AssemblyCSharp {
 				Debug.LogError(gameObject.name + " should have a navmeshagent");
 				return;
 			}
-			this.agent = objAgent;
+			agent = objAgent;
 		}
 
 		public void Execute() {

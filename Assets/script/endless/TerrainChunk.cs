@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using AssemblyCSharp;
 using UnityEngine;
 
-namespace AssemblyCSharp {
+namespace Assets.script.endless {
 	public class TerrainChunk {
 		private GameObject mesh;
 		private Bounds bounds;
 		private MeshRenderer renderer;
 		private MeshFilter filter;
+		private MeshCollider collider;
 		private LODInfo[] LODlevels;
 		private LODMesh[] LODmeshes;
 		private MapData data;
@@ -33,11 +34,12 @@ namespace AssemblyCSharp {
 			generator.RequestTerrainData(OnMapReceived, pos);
 		}
 
-		void SetupMesh(Transform parent, Material material, Vector3 positionIn3D) {
+		private void SetupMesh(Transform parent, Material material, Vector3 positionIn3D) {
 			mesh = new GameObject("Terrain chunk");
 			mesh.isStatic = true;
 			renderer = mesh.AddComponent<MeshRenderer>();
 			renderer.material = material;
+			collider = mesh.AddComponent<MeshCollider>();
 			filter = mesh.AddComponent<MeshFilter>();
 			mesh.transform.position = positionIn3D;
 			mesh.transform.parent = parent;
@@ -51,12 +53,12 @@ namespace AssemblyCSharp {
 				return;
 			}
 
-			float viewDist = Mathf.Sqrt(bounds.SqrDistance(viewerPos));
-			bool visible = viewDist <= maxViewDst;
+			var viewDist = Mathf.Sqrt(bounds.SqrDistance(viewerPos));
+			var visible = viewDist <= maxViewDst;
 
 			if ( visible ) {
-				int idx = 0;
-				for ( int i = 0; i < LODlevels.Length - 1; i++ ) {
+				var idx = 0;
+				for ( var i = 0; i < LODlevels.Length - 1; i++ ) {
 					if ( viewDist > LODlevels[i].visibleThreshold ) {
 						idx = i + 1;
 					} else {
@@ -71,14 +73,16 @@ namespace AssemblyCSharp {
 		}
 
 		private void UpdateMeshLOD(int idx) {
-			if ( idx != prevLODIdx ) {
-				var lodMesh = LODmeshes[idx];
-				if ( lodMesh.HasMesh ) {
-					prevLODIdx = idx;
-					filter.mesh = lodMesh.Mesh;
-				} else if ( !lodMesh.IsRequestedMesh ) {
-					lodMesh.RequestMesh(data);
-				}
+			if ( idx == prevLODIdx ) {
+				return;
+			}
+			var lodMesh = LODmeshes[idx];
+			if ( lodMesh.HasMesh ) {
+				prevLODIdx = idx;
+				filter.mesh = lodMesh.Mesh;
+				collider.sharedMesh = lodMesh.Mesh;
+			} else if ( !lodMesh.IsRequestedMesh ) {
+				lodMesh.RequestMesh(data);
 			}
 		}
 
