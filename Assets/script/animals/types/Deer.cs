@@ -1,18 +1,19 @@
 ﻿using System.Collections;
-using AssemblyCSharp;
 using Assets.script.components;
 using Assets.script.components.registers;
 using Assets.script.controllers;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Assets.script.animals {
+namespace Assets.script.animals.types {
 	public class Deer : MonoBehaviour, GameEntity, AnimalHandler {
-		private static readonly Animal animal = new AnimalImpl();
-		private static readonly Actionable actionableAnimal = (Actionable) animal;
-		private bool started;
+		public static int life = 1;
 		public float speed = 4;
 		public bool Danger { get; set; }
+
+		private static readonly Animal animal = new AnimalImpl(life);
+		private static readonly Actionable actionableAnimal = (Actionable) animal;
+		private bool started;
 
 		protected void Awake() {
 			InjectionRegister.Register(this);

@@ -3,6 +3,7 @@ using System.Threading;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Assets.script;
 
 namespace AssemblyCSharp {
 	public class MapGenerator : MonoBehaviour {

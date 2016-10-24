@@ -1,5 +1,4 @@
-﻿using AssemblyCSharp;
-using Assets.script.controllers;
+﻿using Assets.script.controllers;
 using Assets.script.controllers.actions.movement;
 using Assets.script.controllers.handlers;
 using UnityEngine;

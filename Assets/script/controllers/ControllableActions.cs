@@ -1,6 +1,6 @@
 ﻿namespace Assets.script.controllers {
 	public enum ControllableActions {
-		Move, Stop, Flee, Roam
+		Move, Stop, Flee, Roam, Damage
 	}
 }
 

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Assets.script;
 
 public class TreeAssetManager : MonoBehaviour, StaticAssetManager {
 
@@ -15,7 +16,7 @@ public class TreeAssetManager : MonoBehaviour, StaticAssetManager {
 	private AssemblyCSharp.Terrain terrainMin, terrainMax;
 
 	void Start() {
-		treeTemplate = GameObject.FindGameObjectWithTag(AssemblyCSharp.TagConstants.TREE_TEMPLATE);
+		treeTemplate = GameObject.FindGameObjectWithTag(TagConstants.TREE_TEMPLATE);
 	}
 
 	public void Init(AssemblyCSharp.Terrain[] terrains, AnimationCurve animCurve, float meshHeight) {
@@ -110,7 +111,7 @@ public class TreeAssetManager : MonoBehaviour, StaticAssetManager {
 		}
 			
 		g.transform.parent = transform;
-		g.tag = AssemblyCSharp.TagConstants.TREE_INST;
+		g.tag = TagConstants.TREE_INST;
 
 		return g;
 	}

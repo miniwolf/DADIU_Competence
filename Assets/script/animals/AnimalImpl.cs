@@ -9,16 +9,27 @@ namespace Assets.script.animals {
 		private readonly Dictionary<ControllableActions, Handler> actions =
 			new Dictionary<ControllableActions, Handler>();
 
+		public int Life { get; private set; }
+
 		public Vector3 Direction { get; set; }
+
+		public AnimalImpl(int life) {
+			Life = life;
+		}
 
 		public void Destroy() {
 			actions.Clear();
 		}
 
 		public void SetupHandlers(GameObject go) {
-			foreach (var actionsValue in actions.Values) {
+			foreach ( var actionsValue in actions.Values ) {
 				actionsValue.SetupComponents(go);
 			}
+		}
+
+		public void TakeDamage(int damage) {
+			Life -= damage;
+			ExecuteAction(ControllableActions.Damage);
 		}
 
 		public void AddAction(ControllableActions actionName, Handler action) {

@@ -38,8 +38,7 @@ namespace Assets.script.components.registers {
 					//controllableFactory.CreatePlayer((Actionable) component);
 					break;
 				case TagConstants.DEER:
-					var handler = (AnimalHandler) component;
-					new DeerFactory(handler.GetActionable()).Build();
+					new DeerFactory((AnimalHandler) component).Build();
 					break;
 			}
 		}

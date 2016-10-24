@@ -3,12 +3,15 @@ using UnityEngine;
 
 namespace Assets.script.controllers.actions.movement {
 	public class RandomRoam : Action {
-		private Animal animal;
+		private readonly Animal animal;
 		private AnimalHandler animalHandler;
+
+		public RandomRoam(Animal animal) {
+			this.animal = animal;
+		}
 
 		public void Setup(GameObject gameObject) {
 			animalHandler = gameObject.GetComponent<AnimalHandler>();
-			animal = animalHandler.GetAnimal();
 		}
 
 		public void Execute() {
