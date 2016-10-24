@@ -1,9 +1,8 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Assets.script.controllers.actions;
-using Assets.script.controllers.handlers;
+using UnityEngine;
 
-namespace AssemblyCSharp {
+namespace Assets.script.controllers.handlers {
 	public class ActionHandler : Handler {
 		protected List<Action> actions = new List<Action>();
 

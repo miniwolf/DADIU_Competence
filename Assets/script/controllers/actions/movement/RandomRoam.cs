@@ -3,30 +3,35 @@ using UnityEngine;
 
 namespace Assets.script.controllers.actions.movement {
 	public class RandomRoam : Action {
-		private readonly Animal animal;
-		private AnimalHandler animalHandler;
+		private AnimalHandler handler;
+		private const float WATER_HEIGHT = .5f;
 
-		public RandomRoam(Animal animal) {
-			this.animal = animal;
+		public RandomRoam(AnimalHandler handler) {
+			this.handler = handler;
 		}
 
 		public void Setup(GameObject gameObject) {
-			animalHandler = gameObject.GetComponent<AnimalHandler>();
+			handler = gameObject.GetComponent<AnimalHandler>();
 		}
 
 		public void Execute() {
-			switch (Random.Range(1, 4)) {
+			if ( handler.GetPosition().y < WATER_HEIGHT ) {
+				handler.Direction = new Vector3(-handler.Direction.x, 0, -handler.Direction.z);
+			} else switch (Random.Range(1, 6)) {
 				case 1:
-					animal.Direction = new Vector3(animalHandler.GetSpeed(), 0, 0);
+					handler.Direction = new Vector3(handler.GetSpeed(), 0, 0);
 					break;
 				case 2:
-					animal.Direction = new Vector3(-animalHandler.GetSpeed(), 0, 0);
+					handler.Direction = new Vector3(-handler.GetSpeed(), 0, 0);
 					break;
 				case 3:
-					animal.Direction = new Vector3(0, 0, animalHandler.GetSpeed());
+					handler.Direction = new Vector3(0, 0, handler.GetSpeed());
 					break;
 				case 4:
-					animal.Direction = new Vector3(0, 0, -animalHandler.GetSpeed());
+					handler.Direction = new Vector3(0, 0, -handler.GetSpeed());
+					break;
+				case 5:
+					handler.Direction = new Vector3(0, 0, 0);
 					break;
 			}
 		}

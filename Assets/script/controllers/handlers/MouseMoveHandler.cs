@@ -35,16 +35,20 @@ namespace Assets.script.controllers.handlers {
 		}
 
 		public void DoAction() {
-			if ( Input.GetMouseButtonDown(0) ) {	
-				cameraToGround = camera.ScreenPointToRay(Input.mousePosition);
-				if ( Physics.Raycast(cameraToGround, out hit, 500f, layerMask.value) ) {
-					foreach ( MoveAction action in moveActions ) {
-						action.Execute(hit.point);
-					}
-					foreach ( Action action in actions ) {
-						action.Execute();
-					}
-				}
+			if ( !Input.GetMouseButtonDown(0) ) {
+				return;
+			}
+
+			cameraToGround = camera.ScreenPointToRay(Input.mousePosition);
+			if ( !Physics.Raycast(cameraToGround, out hit, 500f, layerMask.value) ) {
+				return;
+			}
+
+			foreach ( var action in moveActions ) {
+				action.Execute(hit.point);
+			}
+			foreach ( var action in actions ) {
+				action.Execute();
 			}
 		}
 	}

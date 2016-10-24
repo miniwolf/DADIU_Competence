@@ -11,8 +11,6 @@ namespace Assets.script.animals {
 
 		public int Life { get; private set; }
 
-		public Vector3 Direction { get; set; }
-
 		public AnimalImpl(int life) {
 			Life = life;
 		}

@@ -120,7 +120,7 @@ namespace AssemblyCSharp {
 		}
 	}
 
-	[System.Serializable]
+	[Serializable]
 	public struct Terrain {
 		public string name;
 		public float height;

@@ -1,19 +1,15 @@
 ﻿using System.Collections;
-using Assets.script.components;
 using Assets.script.components.registers;
 using Assets.script.controllers;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Assets.script.animals.types {
-	public class Deer : MonoBehaviour, GameEntity, AnimalHandler {
-		public static int life = 1;
-		public float speed = 4;
+	public class Deer : AnimalHandlerImpl, GameEntity {
 		public bool Danger { get; set; }
-
-		private static readonly Animal animal = new AnimalImpl(life);
-		private static readonly Actionable actionableAnimal = (Actionable) animal;
 		private bool started;
+
+		public Deer() : base(1, 4.1f) {
+		}
 
 		protected void Awake() {
 			InjectionRegister.Register(this);
@@ -30,20 +26,14 @@ namespace Assets.script.animals.types {
 				return;
 			}
 
-			StartCoroutine(DoAction());
+			StartCoroutine(DoAction(this));
 			started = true;
 		}
 
-		private static IEnumerator DoAction() {
+		private static IEnumerator DoAction(Deer deer) {
 			while ( true ) {
-				switch ( Random.Range(1, 4) ) {
-					case 1:
-					case 2:
-						actionableAnimal.ExecuteAction(ControllableActions.Roam);
-						break;
-					default:
-						actionableAnimal.ExecuteAction(ControllableActions.Stop);
-						break;
+				if ( !deer.Danger ) {
+					actionableAnimal.ExecuteAction(ControllableActions.Roam);
 				}
 				yield return new WaitForSeconds(2);
 			}
@@ -55,18 +45,6 @@ namespace Assets.script.animals.types {
 
 		public string GetTag() {
 			return TagConstants.DEER;
-		}
-
-		public Animal GetAnimal() {
-			return animal;
-		}
-
-		public Actionable GetActionable() {
-			return actionableAnimal;
-		}
-
-		public float GetSpeed() {
-			return speed;
 		}
 	}
 }

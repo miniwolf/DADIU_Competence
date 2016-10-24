@@ -1,23 +1,19 @@
 ﻿using System.Collections.Generic;
-using AssemblyCSharp;
 using Assets.script.animals;
 using Assets.script.components.factory;
 using UnityEngine;
 
 namespace Assets.script.components.registers {
 	public class InjectionRegister : MonoBehaviour {
-		private static List<GameEntity> components = new List<GameEntity>();
-		//private PlayerFactory controllableFactory;
+		private static readonly List<GameEntity> components = new List<GameEntity>();
+		private new static Camera camera;
 
-		void Awake() {
-			//controllableFactory = new PlayerFactory();
-		}
-
-		void Start() {
+		protected void Start() {
+			camera = GameObject.FindGameObjectWithTag(TagConstants.CAMERA).GetComponent<Camera>();
 			InitializeComponents();
 		}
 
-		void OnDestroy() {
+		protected void OnDestroy() {
 			components.Clear();
 		}
 
@@ -25,20 +21,20 @@ namespace Assets.script.components.registers {
 			components.Add(component);
 		}
 
-		private void InitializeComponents() {
-			foreach ( GameEntity component in components ) {
+		private static void InitializeComponents() {
+			foreach ( var component in components ) {
 				InitializeComponent(component);
 				component.SetupComponents();
 			}
 		}
 
-		private void InitializeComponent(GameEntity component) {
+		private static void InitializeComponent(GameEntity component) {
 			switch ( component.GetTag() ) {
 				case TagConstants.PLAYER:
 					//controllableFactory.CreatePlayer((Actionable) component);
 					break;
 				case TagConstants.DEER:
-					new DeerFactory((AnimalHandler) component).Build();
+					new DeerFactory(((AnimalHandler) component).GetActionable(), (AnimalHandler)component, camera).Build();
 					break;
 			}
 		}
