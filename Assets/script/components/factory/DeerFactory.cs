@@ -1,19 +1,21 @@
-﻿using AssemblyCSharp;
-using Assets.script.animals;
+﻿using Assets.script.animals;
 using Assets.script.controllers;
 using Assets.script.controllers.actions.damage;
 using Assets.script.controllers.actions.movement;
+using Assets.script.controllers.actions.notice;
 using Assets.script.controllers.handlers;
 using UnityEngine;
 
 namespace Assets.script.components.factory {
 	public class DeerFactory : Factory {
-		private readonly Actionable deer;
-		private static Animal animal;
+		private static Actionable deer;
+		private static AnimalHandler handler;
+		private static Camera camera;
 
-		public DeerFactory(AnimalHandler deer) {
-			animal = deer.GetAnimal();
-			this.deer = deer.GetActionable();
+		public DeerFactory(Actionable deer, AnimalHandler handler, Camera camera) {
+			DeerFactory.deer = deer;
+			DeerFactory.handler = handler;
+			DeerFactory.camera = camera;
 		}
 
 		public void Build() {
@@ -22,26 +24,40 @@ namespace Assets.script.components.factory {
 			deer.AddAction(ControllableActions.Stop, CreateStop());
 			deer.AddAction(ControllableActions.Flee, CreateFlee());
 			deer.AddAction(ControllableActions.Damage, CreateDamage());
+			deer.AddAction(ControllableActions.Notice, CreateNotice());
+			deer.AddAction(ControllableActions.Nodanger, CreateNodanger());
+		}
+
+		private static Handler CreateNodanger() {
+			var actionHandler = new ActionHandler();
+			actionHandler.AddAction(new StopFleeing());
+			return actionHandler;
+		}
+
+		private static Handler CreateNotice() {
+			var actionHandler = new ActionHandler();
+			actionHandler.AddAction(new FleeIfEnemy());
+			return actionHandler;
 		}
 
 		private static Handler CreateDamage() {
 			var actionHandler = new ActionHandler();
-			actionHandler.AddAction(new TakeDamage(animal));
-			actionHandler.AddAction(new DieIfNegativeLife(animal));
-			var camera = GameObject.FindGameObjectWithTag(TagConstants.CAMERA).GetComponent<Camera>();
-			actionHandler.AddAction(new FleeAwayFromAttacker(camera));
+			actionHandler.AddAction(new TakeDamage(handler.GetAnimal()));
+			actionHandler.AddAction(new DieIfNegativeLife(handler.GetAnimal()));
+			actionHandler.AddAction(new FleeAwayFromAttacker(camera, handler));
 			return actionHandler;
 		}
 
 		private static Handler CreateRoaming() {
 			var actionHandler = new ActionHandler();
-			actionHandler.AddAction(new RandomRoam(animal));
+			actionHandler.AddAction(new RandomRoam(handler));
 			return actionHandler;
 		}
 
 		private static Handler CreateFlee() {
 			var actionHandler = new ActionHandler();
-			actionHandler.AddAction(new AnimalMovement());
+			actionHandler.AddAction(new FleeAwayFromAttacker(camera, handler));
+			actionHandler.AddAction(new AnimalMovement(handler));
 			return actionHandler;
 		}
 
@@ -53,7 +69,7 @@ namespace Assets.script.components.factory {
 
 		private static Handler CreateMovement() {
 			var actionHandler = new ActionHandler();
-			actionHandler.AddAction(new AnimalMovement());
+			actionHandler.AddAction(new AnimalMovement(handler));
 			return actionHandler;
 		}
 	}
