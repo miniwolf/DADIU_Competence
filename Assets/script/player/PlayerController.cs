@@ -16,7 +16,7 @@ namespace Assets.script.player {
 		public int startHealth = 100;
 		private int currentHealth;
 		private int maxHealth = 100;
-		private int currentScore = 0;
+		private int currentScore;
 
 		void Awake() {
 			InjectionRegister.Register(this);
