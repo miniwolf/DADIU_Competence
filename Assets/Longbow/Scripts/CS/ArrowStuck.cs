@@ -67,21 +67,12 @@ public class ArrowStuck : MonoBehaviour {
 	}
 
 	void OnCollisionEnter(Collision collision) {
-		Debug.Log("Arrow hit: " + collision.transform.tag + ", collision.gameObject.tag: " + collision.gameObject.tag);
+//		Debug.Log("Arrow hit: " + collision.transform.tag + ", collision.gameObject.tag: " + collision.gameObject.tag);
 		if( GetComponent<Rigidbody>().velocity.magnitude > 5 ) { // arrow is moving
-			Debug.Log("Moving arrow hit " + collision.transform.tag);
+//			Debug.Log("Moving arrow hit " + collision.transform.tag);
 			AnimalHandler handler = collision.gameObject.GetComponentInParent<AnimalHandler>();
 			if( handler != null ) {
-				Debug.Log("AnimalHandler : " + handler.GetHashCode());
-				try {
-					Actionable a = handler.GetActionable();
-					if( a != null )
-						a.ExecuteAction(Assets.script.controllers.ControllableActions.Damage);
-					else
-						Debug.Log("A is null");
-				} catch( System.Exception e ) {
-					Debug.Log(e);
-				}
+				handler.GetActionable().ExecuteAction(Assets.script.controllers.ControllableActions.Damage);
 			}
 		
 			if( collision.transform.tag != Assets.script.TagConstants.PLAYER ) {
@@ -103,6 +94,6 @@ public class ArrowStuck : MonoBehaviour {
 		//parent arrow to object | if the object the arrow hits moves, this will make the arrow move with it
 		transform.parent = collision.transform;
 
-//		enabled = false;
+		enabled = false;
 	}
 }

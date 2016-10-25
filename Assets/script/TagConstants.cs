@@ -25,6 +25,7 @@ namespace Assets.script {
 			public static string TEXT_GAME_MODE = "TextGameMode";
 			public static string TEXT_HP_AMOUNT = "TextHPAmount";
 			public static string TEXT_TIME_REMAINING = "TextTimeRemaining";
+			public static string TEXT_CURRENT_SCORE = "TextCurrentScore";
 		}
 	}
 }

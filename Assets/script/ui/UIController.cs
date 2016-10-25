@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class UIController : MonoBehaviour, GameStateManager.GameStateChangeListener {
 
 	private GameObject mainMenuPanel, inGameMenuPanel;
-	private Text textTimeRemaining, textHPAmount, textGameMode;
+	private Text textTimeRemaining, textHPAmount, textGameMode, textCurrentScore;
 	private Dropdown dropdownGameMode;
 	private Button buttonStartGame;
 
@@ -33,6 +33,7 @@ public class UIController : MonoBehaviour, GameStateManager.GameStateChangeListe
 		});
 
 		// controll start state
+		textGameMode.text = "Game mode: Score";
 		gameStateManager.RegisterListener(this);
 		gameStateManager.SetNewState(GameStateManager.GameState.Paused);
 	}
@@ -58,6 +59,9 @@ public class UIController : MonoBehaviour, GameStateManager.GameStateChangeListe
 		textTimeRemaining.text = "Time remaining: " + seconds + (seconds > 1 ? " seconds" : " SECOND!");
 	}
 
+	public void UpdateCurrentScore(int score) { 
+		textTimeRemaining.text = "Score: " + score;
+	}
 
 	private GameStateManager.GameMode ResolveGameMode() {
 		return 	dropdownGameMode.value == 0 ? GameStateManager.GameMode.Score : GameStateManager.GameMode.Survival;
@@ -67,9 +71,11 @@ public class UIController : MonoBehaviour, GameStateManager.GameStateChangeListe
 		switch( ResolveGameMode() ) {
 		case GameStateManager.GameMode.Score: 
 				textTimeRemaining.gameObject.SetActive(true);
+				textGameMode.text = "Game mode: Score";
 				break;
 			case GameStateManager.GameMode.Survival: 
 				textTimeRemaining.gameObject.SetActive(false);
+				textGameMode.text = "Game mode: Survival";
 				break;
 		}
 

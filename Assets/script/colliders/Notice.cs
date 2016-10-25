@@ -21,6 +21,7 @@ namespace Assets.script.colliders {
 		}
 
 		protected void OnTriggerExit(Collider other) {
+//			Debug.Log("Notice collided with " + other.transform.tag);
 			if ( handler.Target == null ) {
 				return;
 			}
