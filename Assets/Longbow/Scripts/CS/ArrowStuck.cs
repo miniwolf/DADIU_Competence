@@ -43,7 +43,6 @@ namespace Assets.Longbow.Scripts.CS {
 				return;
 			}
 
-			Debug.Log("Arrow hit: " + collision.transform.tag + ", collision.gameObject.tag: " + collision.gameObject.tag);
 			var handler = collision.gameObject.GetComponentInParent<AnimalHandler>();
 			if ( handler != null ) {
 				handler.GetActionable().ExecuteAction(ControllableActions.Damage);

@@ -16,6 +16,7 @@ namespace Assets.script.animals.types {
 		protected void Awake() {
 			InjectionRegister.Register(this);
 			CanMove = true;
+			CanKill = true;
 		}
 
 		protected void OnDestroy() {
