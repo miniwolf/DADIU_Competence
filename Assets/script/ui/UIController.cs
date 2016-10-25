@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class UIController : MonoBehaviour, GameStateManager.GameStateChangeListener {
 
-
 	private GameObject mainMenuPanel, inGameMenuPanel;
 	private Text textTimeRemaining, textHPAmount, textGameMode;
 	private Dropdown dropdownGameMode;
@@ -15,17 +14,17 @@ public class UIController : MonoBehaviour, GameStateManager.GameStateChangeListe
 
 	void Start() {
 		// fetch dependencies
-		gameStateManager = GameObject.FindGameObjectWithTag(AssemblyCSharp.TagConstants.GAME_STATE_MANAGER).GetComponent<GameStateManager>();
+		gameStateManager = GameObject.FindGameObjectWithTag(Assets.script.TagConstants.GAME_STATE_MANAGER).GetComponent<GameStateManager>();
 
-		mainMenuPanel = GameObject.FindGameObjectWithTag(AssemblyCSharp.TagConstants.UI.PANEL_MAIN);
-		inGameMenuPanel = GameObject.FindGameObjectWithTag(AssemblyCSharp.TagConstants.UI.PANEL_IN_GAME);
+		mainMenuPanel = GameObject.FindGameObjectWithTag(Assets.script.TagConstants.UI.PANEL_MAIN);
+		inGameMenuPanel = GameObject.FindGameObjectWithTag(Assets.script.TagConstants.UI.PANEL_IN_GAME);
 
-		textTimeRemaining = GetTextComponent(AssemblyCSharp.TagConstants.UI.TEXT_TIME_REMAINING);
-		textHPAmount = GetTextComponent(AssemblyCSharp.TagConstants.UI.TEXT_HP_AMOUNT);
-		textGameMode = GetTextComponent(AssemblyCSharp.TagConstants.UI.TEXT_GAME_MODE);
+		textTimeRemaining = GetTextComponent(Assets.script.TagConstants.UI.TEXT_TIME_REMAINING);
+		textHPAmount = GetTextComponent(Assets.script.TagConstants.UI.TEXT_HP_AMOUNT);
+		textGameMode = GetTextComponent(Assets.script.TagConstants.UI.TEXT_GAME_MODE);
 
-		dropdownGameMode = GameObject.FindGameObjectWithTag(AssemblyCSharp.TagConstants.UI.DROPDOWN_GAME_MODE).GetComponent<Dropdown>();
-		buttonStartGame = GameObject.FindGameObjectWithTag(AssemblyCSharp.TagConstants.UI.BUTTON_START_GAME).GetComponent<Button>();
+		dropdownGameMode = GameObject.FindGameObjectWithTag(Assets.script.TagConstants.UI.DROPDOWN_GAME_MODE).GetComponent<Dropdown>();
+		buttonStartGame = GameObject.FindGameObjectWithTag(Assets.script.TagConstants.UI.BUTTON_START_GAME).GetComponent<Button>();
 
 		// init listeners 
 		buttonStartGame.onClick.AddListener(OnStartGame);
