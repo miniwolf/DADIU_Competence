@@ -71,10 +71,10 @@ public class ArrowStuck : MonoBehaviour {
 		if( GetComponent<Rigidbody>().velocity.magnitude > 5 ) { // arrow is moving
 //			Debug.Log("Moving arrow hit " + collision.transform.tag);
 			AnimalHandler handler = collision.gameObject.GetComponentInParent<AnimalHandler>();
-			if( handler != null ) {
+			if ( handler != null ) {
 				handler.GetActionable().ExecuteAction(Assets.script.controllers.ControllableActions.Damage);
 			}
-		
+
 			if( collision.transform.tag != Assets.script.TagConstants.PLAYER ) {
 				DisableArrow(collision);
 			}

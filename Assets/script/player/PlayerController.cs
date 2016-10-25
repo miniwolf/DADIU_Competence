@@ -2,9 +2,10 @@
 using System.Collections;
 using UnityStandardAssets.Characters.FirstPerson;
 using Assets.script;
+using Assets.script.components;
 using Assets.script.components.registers;
 
-public class PlayerController : MonoBehaviour, GameStateManager.GameStateChangeListener, GameEntity {
+public class PlayerController : MonoBehaviour, GameStateManager.GameStateChangeListener, GameEntity, Damageable {
 
 	private GameStateManager gameManager;
 	private FirstPersonController fpController;
@@ -64,10 +65,6 @@ public class PlayerController : MonoBehaviour, GameStateManager.GameStateChangeL
 		maxHealth = addLifeMax;
 	}
 
-	public void DealDamage(int dmg) {
-		currentHealth -= dmg;
-	}
-
 	private void CheckDead() {
 		if( currentHealth <= 0 ) {
 			gameManager.SetNewState(GameStateManager.GameState.Paused);
@@ -80,5 +77,9 @@ public class PlayerController : MonoBehaviour, GameStateManager.GameStateChangeL
 
 	public void SetupComponents() {
 		// todo 
+	}
+
+	public void TakeDamage(int dmg) {
+		currentHealth -= dmg;
 	}
 }
