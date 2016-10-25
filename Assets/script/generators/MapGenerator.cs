@@ -39,23 +39,22 @@ namespace AssemblyCSharp {
 		public AnimationCurve heightCurve;
 		public Terrain[] regions;
 
-		private Queue<MapThreadInfo<MapData>> mapThreadInfoQueue = new Queue<MapThreadInfo<MapData>>();
-		private Queue<MapThreadInfo<MeshData>> meshThreadInfoQueue = new Queue<MapThreadInfo<MeshData>>();
+		private readonly Queue<MapThreadInfo<MapData>> mapThreadInfoQueue = new Queue<MapThreadInfo<MapData>>();
+		private readonly Queue<MapThreadInfo<MeshData>> meshThreadInfoQueue = new Queue<MapThreadInfo<MeshData>>();
 
 		private StaticAssetManager[] assetManagers;
-		private List<MapChangeListener> mapChangeListeners = new List<MapChangeListener>();
+		private readonly List<MapChangeListener> mapChangeListeners = new List<MapChangeListener>();
 
 		[Range(1, 6)]
 		public int editorLOD = 1;
 
-		void Start() {
+		protected void Awake() {
 			InitAssetManagers();
 		}
 
-		void Update() {
-
-			if( mapThreadInfoQueue.Count > 0 ) {
-				for( int i = 0; i < mapThreadInfoQueue.Count; i++ ) {
+		protected void Update() {
+			if ( mapThreadInfoQueue.Count > 0 ) {
+				for ( int i = 0; i < mapThreadInfoQueue.Count; i++ ) {
 					var data = mapThreadInfoQueue.Dequeue();
 					data.callback(data.parameter); // 
 					foreach( MapChangeListener l in mapChangeListeners ) {
@@ -64,8 +63,8 @@ namespace AssemblyCSharp {
 				}
 			}
 
-			if( meshThreadInfoQueue.Count > 0 ) {
-				for( int i = 0; i < meshThreadInfoQueue.Count; i++ ) {
+			if ( meshThreadInfoQueue.Count > 0 ) {
+				for ( int i = 0; i < meshThreadInfoQueue.Count; i++ ) {
 					var data = meshThreadInfoQueue.Dequeue();
 					data.callback(data.parameter); // TerrainChunk.OnMapReceived
 				}
@@ -110,7 +109,7 @@ namespace AssemblyCSharp {
 			return autoUpdate;
 		}
 
-		void InitAssetManagers() {
+		private void InitAssetManagers() {
 			assetManagers = GameObject.FindGameObjectWithTag(TagConstants.ASSET_MANAGER).GetComponentsInChildren<StaticAssetManager>();
 
 			mapChangeListeners.AddRange(assetManagers);

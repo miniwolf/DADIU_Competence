@@ -7,11 +7,13 @@ namespace Assets.script.animals.types {
 	public class Deer : AnimalHandlerImpl, GameEntity {
 		public bool Danger { get; set; }
 		private bool started;
+		private bool initialized;
 
 		public Deer() : base(1, 4.5f) { // health, speed
 		}
 
 		protected void Awake() {
+			initialized = true;
 			InjectionRegister.Register(this);
 		}
 
@@ -20,6 +22,9 @@ namespace Assets.script.animals.types {
 		}
 
 		protected void Update() {
+			if ( !initialized ) {
+				Debug.Log("Issue");
+			}
 			actionableAnimal.ExecuteAction(Danger ? ControllableActions.Flee : ControllableActions.Move);
 
 			if ( started ) {
