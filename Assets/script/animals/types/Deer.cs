@@ -8,7 +8,7 @@ namespace Assets.script.animals.types {
 		public bool Danger { get; set; }
 		private bool started;
 
-		public Deer() : base(1, 4.1f) {
+		public Deer() : base(1, 4.5f) { // health, speed
 		}
 
 		protected void Awake() {
@@ -33,7 +33,7 @@ namespace Assets.script.animals.types {
 		private static IEnumerator DoAction(Deer deer) {
 			while ( true ) {
 				if ( !deer.Danger ) {
-					actionableAnimal.ExecuteAction(ControllableActions.Roam);
+					deer.actionableAnimal.ExecuteAction(ControllableActions.Roam);
 				}
 				yield return new WaitForSeconds(2);
 			}

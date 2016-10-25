@@ -36,6 +36,9 @@ namespace Assets.script.components.registers {
 				case TagConstants.DEER:
 					new DeerFactory(((AnimalHandler) component).GetActionable(), (AnimalHandler)component, camera).Build();
 					break;
+				case TagConstants.WOLF:
+					new WolfFactory(((AnimalHandler) component).GetActionable(), (AnimalHandler)component).Build();
+					break;
 			}
 		}
 	}

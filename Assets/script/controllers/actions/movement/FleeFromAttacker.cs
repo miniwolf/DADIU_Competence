@@ -1,11 +1,11 @@
 ﻿using Assets.script.animals;
 using UnityEngine;
 
-namespace Assets.script.controllers.actions.damage {
+namespace Assets.script.controllers.actions.movement {
 	public class FleeAwayFromAttacker : Action {
 		private readonly AnimalHandler handler;
 
-		public FleeAwayFromAttacker(Camera camera, AnimalHandler handler) {
+		public FleeAwayFromAttacker(AnimalHandler handler) {
 			this.handler = handler;
 		}
 
@@ -18,7 +18,6 @@ namespace Assets.script.controllers.actions.damage {
 			var inverseDirection = ourLocation - enemyLocation;
 			inverseDirection.y = 0;
 			handler.Direction = inverseDirection.normalized * handler.GetSpeed();
-			Debug.Log(handler.Direction);
 		}
 	}
 }
