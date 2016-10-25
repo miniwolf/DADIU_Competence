@@ -9,7 +9,7 @@ using Random = UnityEngine.Random;
 using Terrain = AssemblyCSharp.Terrain;
 
 namespace Assets.script.manager {
-	public class AnimalSpawning : MonoBehaviour, StaticAssetManager {
+	public class AnimalSpawning : MonoBehaviour, StaticAssetManager, GameStateManager.GameStateChangeListener, GameStateManager.GameModeChangeListener {
 		private Terrain terrainMin, terrainMax;
 		private	AnimationCurve animCurve;
 		private float meshHeight;
@@ -22,7 +22,31 @@ namespace Assets.script.manager {
 
 		public int wolfRatio = 20;
 
+		private Queue<MapData> mapChunks = new Queue<MapData>();
+		private GameStateManager gameManager;
+
+		void Start() {
+			gameManager = GameObject.FindGameObjectWithTag(Assets.script.TagConstants.GAME_STATE_MANAGER).GetComponent<GameStateManager>();
+			gameManager.RegisterGameStateListener(this);
+			gameManager.RegisterModeListener(this);
+		}
+
+		void Destroy() {
+			gameManager.UnRegisterModeListener(this);
+			gameManager.UnRegisterGameStateListener(this);
+		}
+
 		public void OnMapRendered(MapData info) {
+			mapChunks.Enqueue(info);
+		}
+
+		private void PlaceAnimals() {
+			while(mapChunks.Count > 0) {
+				PlaceAnimalOnChunk(mapChunks.Dequeue());
+			}
+		}
+
+		private void PlaceAnimalOnChunk(MapData info) {
 			IList emptyPositions = new List<Vector3>();
 
 			var width = info.noiseMap.GetLength(0);
@@ -54,13 +78,13 @@ namespace Assets.script.manager {
 			Vector3[] freePos = {Vector3.zero};
 			var mySwitch = new Dictionary<Func<int, bool>, Action> {
 				{ x => x < wolfRatio, () => {
-					var wolf = (GameObject) Instantiate(wolfObject, freePos[0], Quaternion.identity);
-					wolf.transform.parent = transform;
-				} },
+						var wolf = (GameObject) Instantiate(wolfObject, freePos[0], Quaternion.identity);
+						wolf.transform.parent = transform;
+					} },
 				{ x => x < 100, () => {
-					var deer = (GameObject) Instantiate(deerObject, freePos[0], Quaternion.identity);
-					deer.transform.parent = transform;
-				} }
+						var deer = (GameObject) Instantiate(deerObject, freePos[0], Quaternion.identity);
+						deer.transform.parent = transform;
+					} }
 			};
 			for ( var i = 0; i < emptyPositions.Count; i += 10000 - animalDensity ) {
 				freePos[0] = (Vector3)emptyPositions[Random.Range(0, emptyPositions.Count)];
@@ -79,6 +103,7 @@ namespace Assets.script.manager {
 			InjectionRegister.ReDo();
 		}
 
+
 		public void Init(Terrain[] terrains, AnimationCurve animCurve, float meshHeight) {
 			this.animCurve = animCurve;
 			this.meshHeight = meshHeight;
@@ -96,6 +121,23 @@ namespace Assets.script.manager {
 				terrainMax = terrains[i + 1]; // second grass element
 				break;
 			}
+		}
+
+		public void OnGameStateChanged(GameStateManager.GameState oldState, GameStateManager.GameState newState) {
+			if( newState == GameStateManager.GameState.Playing )
+				PlaceAnimals();				
+		}
+
+		public void OnGameModeChanged(GameStateManager.GameMode newMode) {
+			switch( newMode ) {
+			case GameStateManager.GameMode.Score:
+				wolfRatio /= 3;
+				break;
+			case GameStateManager.GameMode.Survival:
+				wolfRatio *= 3;
+				break;
+			}
+			Debug.Log("WolfRatio: " + wolfRatio);
 		}
 	}
 }

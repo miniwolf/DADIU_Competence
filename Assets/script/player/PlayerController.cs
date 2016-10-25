@@ -12,12 +12,14 @@ public class PlayerController : MonoBehaviour, GameStateManager.GameStateChangeL
 	private UIController uiController;
 	// Use this for initialization
 
-	private int currentHealth = 100;
+	public int startHealth = 100;
+	private int currentHealth;
 	private int maxHealth = 100;
 	private int currentScore = 0;
 
 	void Awake() {
 		InjectionRegister.Register(this);
+		currentHealth = startHealth;
 	}
 
 	void Start() {
@@ -29,7 +31,7 @@ public class PlayerController : MonoBehaviour, GameStateManager.GameStateChangeL
 
 		bowController.enabled = false;
 		fpController.enabled = false;
-		gameManager.RegisterListener(this);
+		gameManager.RegisterGameStateListener(this);
 	}
 	
 	// Update is called once per frame
@@ -52,20 +54,30 @@ public class PlayerController : MonoBehaviour, GameStateManager.GameStateChangeL
 
 	public void UpdateScore(int score) { 
 		currentScore = score;
+		UpdatePerks();
 	}
 
 	public void IncrementScore(int score) { 
 		Debug.Log("Player score increment: " + score);
 		currentScore += score;
+		UpdatePerks();
 	}
 
-	public void UpdateLifeMax(int addLifeMax) {
-		currentHealth += addLifeMax;
-		maxHealth = addLifeMax;
+	public void UpdateLifeMax(int addHealth) {
+		currentHealth += addHealth;
+		maxHealth += addHealth;
 	}
 
 	public void DealDamage(int dmg) {
 		currentHealth -= dmg;
+	}
+
+	private void UpdatePerks() {
+		int healthCap = ( currentScore / 5 ) * 10; // each 5 kills get 10 extra HP
+		int newHealth = startHealth + healthCap;
+		if( newHealth != maxHealth ) {
+			UpdateLifeMax(healthCap);
+		}
 	}
 
 	private void CheckDead() {

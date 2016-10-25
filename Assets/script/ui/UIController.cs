@@ -35,7 +35,7 @@ public class UIController : MonoBehaviour, GameStateManager.GameStateChangeListe
 
 		// controll start state
 		textGameMode.text = "Game mode: Score";
-		gameStateManager.RegisterListener(this);
+		gameStateManager.RegisterGameStateListener(this);
 		gameStateManager.SetNewState(GameStateManager.GameState.Paused);
 	}
 
