@@ -1,10 +1,11 @@
 ﻿using System.Collections;
+using Assets.script.components;
 using Assets.script.components.registers;
 using Assets.script.controllers;
 using UnityEngine;
 
 namespace Assets.script.animals.types {
-	public class Deer : AnimalHandlerImpl, GameEntity {
+	public class Deer : AnimalHandlerImpl, GameEntity, Damageable {
 		public bool Danger { get; set; }
 		private bool started;
 		private bool initialized;
@@ -50,6 +51,10 @@ namespace Assets.script.animals.types {
 
 		public string GetTag() {
 			return TagConstants.DEER;
+		}
+
+		public void TakeDamage(int i) {
+			animal.TakeDamage(i);
 		}
 	}
 }

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Assets.script.animals;
+using Assets.script.animals.types;
 using Assets.script.components.factory;
+using Assets.script.player;
 using UnityEngine;
 
 namespace Assets.script.components.registers {
@@ -52,7 +54,7 @@ namespace Assets.script.components.registers {
 					new DeerFactory(((AnimalHandler) component).GetActionable(), (AnimalHandler)component, camera, player).Build();
 					break;
 				case TagConstants.WOLF:
-					new WolfFactory(((AnimalHandler) component).GetActionable(), (AnimalHandler)component, player).Build();
+					new WolfFactory(((AnimalHandler) component).GetActionable(), (AnimalHandler)component, player, (Wolf) component).Build();
 					break;
 			}
 		}

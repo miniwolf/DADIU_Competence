@@ -1,30 +1,42 @@
 ﻿using Assets.script.animals;
+using Assets.script.animals.types;
 using Assets.script.controllers;
 using Assets.script.controllers.actions.damage;
 using Assets.script.controllers.actions.movement;
 using Assets.script.controllers.actions.notice;
 using Assets.script.controllers.handlers;
+using Assets.script.player;
 
 namespace Assets.script.components.factory {
 	public class WolfFactory {
-		private static Actionable wolf;
+		private static Actionable actionable;
 		private static AnimalHandler handler;
 		private static PlayerController player;
+		private static Wolf wolf;
 
-		public WolfFactory(Actionable wolf, AnimalHandler handler, PlayerController player) {
+		public WolfFactory(Actionable actionable, AnimalHandler handler, PlayerController player, Wolf wolf) {
 			WolfFactory.wolf = wolf;
+			WolfFactory.actionable = actionable;
 			WolfFactory.handler = handler;
 			WolfFactory.player = player;
 		}
 
 		public void Build() {
-			wolf.AddAction(ControllableActions.Move, CreateMovement());
-			wolf.AddAction(ControllableActions.Roam, CreateRoaming());
-			wolf.AddAction(ControllableActions.Stop, CreateStop());
-			wolf.AddAction(ControllableActions.Damage, CreateDamage());
-			wolf.AddAction(ControllableActions.Notice, CreateNotice());
-			wolf.AddAction(ControllableActions.Nodanger, CreateNodanger());
-			wolf.AddAction(ControllableActions.Hunt, CreateHunt());
+			actionable.AddAction(ControllableActions.Move, CreateMovement());
+			actionable.AddAction(ControllableActions.Roam, CreateRoaming());
+			actionable.AddAction(ControllableActions.Stop, CreateStop());
+			actionable.AddAction(ControllableActions.Damage, CreateDamage());
+			actionable.AddAction(ControllableActions.Notice, CreateNotice());
+			actionable.AddAction(ControllableActions.Nodanger, CreateNodanger());
+			actionable.AddAction(ControllableActions.Hunt, CreateHunt());
+			actionable.AddAction(ControllableActions.Kill, CreateKill());
+		}
+
+		private static Handler CreateKill() {
+			var actionHandler = new ActionHandler();
+			actionHandler.AddAction(new DealDamageToTarget(wolf));
+			actionHandler.AddAction(new DisableMovement(wolf));
+			return actionHandler;
 		}
 
 		private static Handler CreateHunt() {

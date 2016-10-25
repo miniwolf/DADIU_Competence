@@ -34,7 +34,7 @@ namespace Assets.script.animals {
 		}
 
 		public void ExecuteAction(ControllableActions actionName) {
-			if( actions.ContainsKey(actionName) )
+			if ( actions.ContainsKey(actionName) )
 				actions[actionName].DoAction();
 			else
 				Debug.Log("Cannot execute action " + actionName + " on " + this);

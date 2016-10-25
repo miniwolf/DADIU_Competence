@@ -6,15 +6,16 @@ using UnityEngine;
 namespace Assets.script.animals.types {
 	public class Wolf : AnimalHandlerImpl, GameEntity {
 		private bool started;
-		private bool initialized;
 		public bool Noticed { get; set; }
+		public bool CanKill { get; set; }
+		public bool CanMove { get; set; }
 
 		public Wolf() : base(2, 4) { // health, speed
 		}
 
 		protected void Awake() {
-			initialized = true;
 			InjectionRegister.Register(this);
+			CanMove = true;
 		}
 
 		protected void OnDestroy() {
@@ -22,8 +23,8 @@ namespace Assets.script.animals.types {
 		}
 
 		protected void Update() {
-			if ( !initialized ) {
-				Debug.Log("Issue");
+			if ( !CanMove ) {
+				return;
 			}
 			actionableAnimal.ExecuteAction(Noticed ? ControllableActions.Hunt : ControllableActions.Move);
 

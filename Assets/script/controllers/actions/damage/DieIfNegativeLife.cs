@@ -1,11 +1,12 @@
 ﻿using Assets.script.animals;
+using Assets.script.player;
 using UnityEngine;
 
 namespace Assets.script.controllers.actions.damage {
 	public class DieIfNegativeLife : Action {
 		private readonly Animal animal;
 		private GameObject go;
-		private PlayerController player;
+		private readonly PlayerController player;
 
 		public DieIfNegativeLife(Animal animal, PlayerController player) {
 			this.animal = animal;
@@ -17,10 +18,11 @@ namespace Assets.script.controllers.actions.damage {
 		}
 
 		public void Execute() {
-			if ( animal.Life <= 0 ) {
-				go.SetActive(false);
-				player.IncrementScore(1);
+			if ( animal.Life > 0 ) {
+				return;
 			}
+			go.SetActive(false);
+			player.IncrementScore(1);
 		}
 	}
 }
