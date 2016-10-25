@@ -12,6 +12,7 @@ namespace Assets.script {
 		public const string TREE_INST = "TreeClone";
 		public const string ROCK_TEMPLATE = "RockTemplate";
 		public const string ROCK_INST = "RockClone";
+		public const string ARROW = "Arrow";
 
 		public static string GAME_STATE_MANAGER = "GameStateManager";
 
@@ -24,6 +25,7 @@ namespace Assets.script {
 			public static string TEXT_GAME_MODE = "TextGameMode";
 			public static string TEXT_HP_AMOUNT = "TextHPAmount";
 			public static string TEXT_TIME_REMAINING = "TextTimeRemaining";
+			public static string TEXT_CURRENT_SCORE = "TextCurrentScore";
 		}
 	}
 }

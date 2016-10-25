@@ -5,13 +5,13 @@ using Assets.script.controllers.handlers;
 using UnityEngine;
 
 namespace Assets.script.animals {
-	public class AnimalImpl : Animal, Actionable  {
+	public class AnimalImpl : Animal, Actionable {
 		private readonly Dictionary<ControllableActions, Handler> actions =
 			new Dictionary<ControllableActions, Handler>();
 
 		public int Life { get; private set; }
 
-		public AnimalImpl(int life) {
+		public AnimalImpl (int life) {
 			Life = life;
 		}
 
@@ -20,14 +20,13 @@ namespace Assets.script.animals {
 		}
 
 		public void SetupHandlers(GameObject go) {
-			foreach ( var actionsValue in actions.Values ) {
+			foreach( var actionsValue in actions.Values ) {
 				actionsValue.SetupComponents(go);
 			}
 		}
 
 		public void TakeDamage(int damage) {
 			Life -= damage;
-			ExecuteAction(ControllableActions.Damage);
 		}
 
 		public void AddAction(ControllableActions actionName, Handler action) {
@@ -35,7 +34,10 @@ namespace Assets.script.animals {
 		}
 
 		public void ExecuteAction(ControllableActions actionName) {
-			actions[actionName].DoAction();
+			if( actions.ContainsKey(actionName) )
+				actions[actionName].DoAction();
+			else
+				Debug.Log("Cannot execute action " + actionName + " on " + this);
 		}
 	}
 }
