@@ -17,6 +17,8 @@ namespace Assets.script.player {
 		private int currentHealth;
 		private int maxHealth = 100;
 		private int currentScore;
+		private bool abilityGainHp = false;
+		private System.Random random = new System.Random();
 
 		void Awake() {
 			InjectionRegister.Register(this);
@@ -65,11 +67,47 @@ namespace Assets.script.player {
 			maxHealth += addHealth;
 		}
 
+		public void IncrementLife(int incr) {
+			currentHealth += incr;
+			if(currentHealth > maxHealth) 
+				currentHealth = maxHealth;
+		}
+
 		private void UpdatePerks() {
 			int healthCap = currentScore / 5 * 10; // each 5 kills get 10 extra HP
 			int newHealth = startHealth + healthCap;
 			if( newHealth != maxHealth ) {
 				UpdateLifeMax(healthCap);
+			}
+
+			if( abilityGainHp ) {
+				IncrementLife(5);
+			}
+
+			if(random.Next(2) == 0) {
+				if( !abilityGainHp ) {
+					GainAbility();
+				} else {
+					RemoveAbility();					
+				}
+			}
+		}
+
+		private void GainAbility() {
+			abilityGainHp = true;
+			Renderer[] rs = GetComponentsInChildren<Renderer>(); 
+			foreach( Renderer r in rs ) {
+				Debug.Log("Original color: " + r.material.color);
+				r.material.color = Color.blue;
+			}
+		}
+
+		private void RemoveAbility() {
+			abilityGainHp = false;
+			Renderer[] rs = GetComponentsInChildren<Renderer>(); 
+			foreach( Renderer r in rs ) {
+				Debug.Log("Original color: " + r.material.color);
+				r.material.color = Color.white;
 			}
 		}
 
