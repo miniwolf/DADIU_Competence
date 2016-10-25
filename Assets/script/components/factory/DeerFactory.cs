@@ -11,11 +11,13 @@ namespace Assets.script.components.factory {
 		private static Actionable deer;
 		private static AnimalHandler handler;
 		private static Camera camera;
+		private static PlayerController player;
 
-		public DeerFactory(Actionable deer, AnimalHandler handler, Camera camera) {
+		public DeerFactory(Actionable deer, AnimalHandler handler, Camera camera, PlayerController player) {
 			DeerFactory.deer = deer;
 			DeerFactory.handler = handler;
 			DeerFactory.camera = camera;
+			DeerFactory.player = player;
 		}
 
 		public void Build() {
@@ -43,7 +45,7 @@ namespace Assets.script.components.factory {
 		private static Handler CreateDamage() {
 			var actionHandler = new ActionHandler();
 			actionHandler.AddAction(new TakeDamage(handler.GetAnimal()));
-			actionHandler.AddAction(new DieIfNegativeLife(handler.GetAnimal()));
+			actionHandler.AddAction(new DieIfNegativeLife(handler.GetAnimal(), player));
 			actionHandler.AddAction(new FleeAwayFromAttacker(handler));
 			return actionHandler;
 		}

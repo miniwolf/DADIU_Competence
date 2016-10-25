@@ -8,9 +8,13 @@ namespace Assets.script.components.registers {
 		private static readonly List<GameEntity> components = new List<GameEntity>();
 		private new static Camera camera;
 		private static bool done;
+		private static PlayerController player;
+
 
 		protected void Start() {
-			camera = GameObject.FindGameObjectWithTag(TagConstants.CAMERA).GetComponent<Camera>();
+			camera = GameObject.FindGameObjectWithTag(TagConstants.CAMERA).GetComponent<Camera>();		
+			player = GameObject.FindGameObjectWithTag(TagConstants.PLAYER).GetComponent<PlayerController>();
+
 			InitializeComponents();
 			components.Clear();
 			done = true;
@@ -45,10 +49,10 @@ namespace Assets.script.components.registers {
 					//controllableFactory.CreatePlayer((Actionable) component);
 					break;
 				case TagConstants.DEER:
-					new DeerFactory(((AnimalHandler) component).GetActionable(), (AnimalHandler)component, camera).Build();
+					new DeerFactory(((AnimalHandler) component).GetActionable(), (AnimalHandler)component, camera, player).Build();
 					break;
 				case TagConstants.WOLF:
-					new WolfFactory(((AnimalHandler) component).GetActionable(), (AnimalHandler)component).Build();
+					new WolfFactory(((AnimalHandler) component).GetActionable(), (AnimalHandler)component, player).Build();
 					break;
 			}
 		}

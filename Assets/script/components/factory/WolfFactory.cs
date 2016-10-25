@@ -9,10 +9,12 @@ namespace Assets.script.components.factory {
 	public class WolfFactory {
 		private static Actionable wolf;
 		private static AnimalHandler handler;
+		private static PlayerController player;
 
-		public WolfFactory(Actionable wolf, AnimalHandler handler) {
+		public WolfFactory(Actionable wolf, AnimalHandler handler, PlayerController player) {
 			WolfFactory.wolf = wolf;
 			WolfFactory.handler = handler;
+			WolfFactory.player = player;
 		}
 
 		public void Build() {
@@ -47,7 +49,7 @@ namespace Assets.script.components.factory {
 		private static Handler CreateDamage() {
 			var actionHandler = new ActionHandler();
 			actionHandler.AddAction(new TakeDamage(handler.GetAnimal()));
-			actionHandler.AddAction(new DieIfNegativeLife(handler.GetAnimal()));
+			actionHandler.AddAction(new DieIfNegativeLife(handler.GetAnimal(), player));
 			actionHandler.AddAction(new HuntIfEnemy());
 			return actionHandler;
 		}
