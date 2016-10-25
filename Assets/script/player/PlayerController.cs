@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Assets.Longbow.Scripts.CS;
 using UnityStandardAssets.Characters.FirstPerson;
 using Assets.script;
 using Assets.script.components;
