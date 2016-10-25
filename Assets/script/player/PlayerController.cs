@@ -74,10 +74,9 @@ namespace Assets.script.player {
 		}
 
 		private void UpdatePerks() {
-			int healthCap = currentScore / 5 * 10; // each 5 kills get 10 extra HP
-			int newHealth = startHealth + healthCap;
-			if( newHealth != maxHealth ) {
-				UpdateLifeMax(healthCap);
+			if( currentScore % 5 == 0 ) {
+				maxHealth += 10;
+				IncrementLife(10);
 			}
 
 			if( abilityGainHp ) {
