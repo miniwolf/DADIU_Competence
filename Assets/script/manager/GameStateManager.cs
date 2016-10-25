@@ -19,14 +19,19 @@ public class GameStateManager : MonoBehaviour {
 		void OnGameStateChanged(GameState oldState, GameState newState);
 	}
 
+	public interface GameModeChangeListener {
+		void OnGameModeChanged(GameMode newMode);
+	}
+
 	public int gameLevelTimeLimit;
-//	public int endGameReloadTime;
+	//	public int endGameReloadTime;
 
 	// Time.timeSinceLevelLoad - time spent in menu
 	private int gameStartTime;
 	private GameMode gameMode;
 	private GameState gameState;
 	private List<GameStateChangeListener> changeListeners = new List<GameStateChangeListener>();
+	private List<GameModeChangeListener> modeListeners = new List<GameModeChangeListener>();
 
 	// Use this for initialization
 	void Start() {
@@ -39,28 +44,46 @@ public class GameStateManager : MonoBehaviour {
 		CheckEndGame();
 	}
 
+	void Destroy() {
+		changeListeners.Clear();
+		modeListeners.Clear();
+		changeListeners = null;
+		modeListeners = null;
+	}
+
 	public int GetRemainingTime() {
 		if( gameMode == GameMode.Survival )
 			return int.MaxValue;
 		else
 			// when time spent in menu + gameplay time is less than the total time since the level is loaded
-			return  ( gameStartTime + gameLevelTimeLimit ) - ((int) Time.timeSinceLevelLoad); 
+			return  ( gameStartTime + gameLevelTimeLimit ) - ( (int)Time.timeSinceLevelLoad ); 
 	}
 
-	public void RegisterListener(GameStateChangeListener l) {
+	public void RegisterGameStateListener(GameStateChangeListener l) {
 		changeListeners.Add(l);
 	}
 
-	public void UnRegisterListener(GameStateChangeListener l) {
+	public void UnRegisterGameStateListener(GameStateChangeListener l) {
 		changeListeners.Remove(l);
 	}
 
+	public void RegisterModeListener(GameModeChangeListener l) {
+		modeListeners.Add(l);
+	}
+
+	public void UnRegisterModeListener(GameModeChangeListener l) {
+		modeListeners.Remove(l);
+	}
+
 	public void SetGameMode(GameMode newGameMode) {
+		if( newGameMode != gameMode )
+			foreach( GameModeChangeListener l in modeListeners )
+				l.OnGameModeChanged(gameMode);
+
 		gameMode = newGameMode;
 	}
 
 	public void SetNewState(GameState newState) {
-		Debug.Log("newState: " + newState + ", gameState: " + gameState);
 		if( newState != gameState ) {
 
 			foreach( GameStateChangeListener l in changeListeners ) {
