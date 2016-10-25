@@ -4,8 +4,8 @@ using UnityEngine;
 namespace Assets.script.animals.types {
 	public class AnimalHandlerImpl : MonoBehaviour, AnimalHandler {
 		private readonly float speed;
-		protected static Animal animal;
-		protected static Actionable actionableAnimal;
+		protected Animal animal;
+		protected Actionable actionableAnimal;
 
 		public Collider Target { get; set; }
 		public Vector3 Direction { get; set; }
