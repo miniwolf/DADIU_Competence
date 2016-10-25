@@ -18,7 +18,7 @@ namespace Assets.script.controllers.actions.damage {
 			var inverseDirection = ourLocation - enemyLocation;
 			inverseDirection.y = 0;
 			handler.Direction = inverseDirection.normalized * handler.GetSpeed();
-			Debug.Log(handler.Direction);
+//			Debug.Log(handler.Direction);
 		}
 	}
 }

@@ -60,7 +60,7 @@ public class GameStateManager : MonoBehaviour {
 	}
 
 	public void SetNewState(GameState newState) {
-
+		Debug.Log("newState: " + newState + ", gameState: " + gameState);
 		if( newState != gameState ) {
 
 			foreach( GameStateChangeListener l in changeListeners ) {
