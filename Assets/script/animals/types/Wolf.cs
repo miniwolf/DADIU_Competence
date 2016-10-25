@@ -10,7 +10,7 @@ namespace Assets.script.animals.types {
 		public bool CanKill { get; set; }
 		public bool CanMove { get; set; }
 
-		public Wolf() : base(2, 4) { // health, speed
+		public Wolf() : base(2, 9) { // health, speed
 		}
 
 		protected void Awake() {

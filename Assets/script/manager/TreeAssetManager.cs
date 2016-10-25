@@ -1,10 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 using Assets.script;
 
 public class TreeAssetManager : MonoBehaviour, StaticAssetManager {
-
 	[Range(1, 9999), Tooltip("Tree density")]
 	public int treeDensity = 1;
 
@@ -103,11 +101,11 @@ public class TreeAssetManager : MonoBehaviour, StaticAssetManager {
 
 		if( useCubes ) {
 			g = GameObject.CreatePrimitive(PrimitiveType.Cube);
-			Vector3 gScale = g.transform.localScale;
-			gScale.y *= 5;
+			var gScale = g.transform.localScale;
+			gScale.y *= 15;
 			g.transform.localScale = gScale;
 		} else {
-			g = (GameObject)Instantiate(treeTemplate);
+			g = Instantiate(treeTemplate);
 		}
 			
 		g.transform.parent = transform;

@@ -1,6 +1,7 @@
 ﻿using Assets.Longbow.Scripts.CS;
 using Assets.script.components;
 using Assets.script.components.registers;
+using Assets.script.ui;
 using UnityEngine;
 using UnityStandardAssets.Characters.FirstPerson;
 

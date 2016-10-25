@@ -76,9 +76,11 @@ public class GameStateManager : MonoBehaviour {
 	}
 
 	public void SetGameMode(GameMode newGameMode) {
-		if( newGameMode != gameMode )
-			foreach( GameModeChangeListener l in modeListeners )
-				l.OnGameModeChanged(gameMode);
+		if ( newGameMode != gameMode ) {
+			foreach ( var l in modeListeners ) {
+				l.OnGameModeChanged(newGameMode);
+			}
+		}
 
 		gameMode = newGameMode;
 	}
@@ -122,12 +124,14 @@ public class GameStateManager : MonoBehaviour {
 		SceneManager.LoadScene(scene.name);
 	}
 
-	void StartPlaying() {
+	private void StartPlaying() {
+		Cursor.lockState = CursorLockMode.Locked;
 		Time.timeScale = 1f;
 		gameStartTime = (int)Time.timeSinceLevelLoad;
 	}
 
-	void PausePlaying() {
+	private void PausePlaying() {
+		Cursor.lockState = CursorLockMode.None;
 		Time.timeScale = 0f;
 		gameStartTime = 0;
 	}

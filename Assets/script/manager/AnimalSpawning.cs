@@ -129,15 +129,14 @@ namespace Assets.script.manager {
 		}
 
 		public void OnGameModeChanged(GameStateManager.GameMode newMode) {
-			switch( newMode ) {
-			case GameStateManager.GameMode.Score:
-				wolfRatio /= 3;
-				break;
-			case GameStateManager.GameMode.Survival:
-				wolfRatio *= 3;
-				break;
+			switch ( newMode ) {
+				case GameStateManager.GameMode.Score:
+					wolfRatio /= 3;
+					break;
+				case GameStateManager.GameMode.Survival:
+					wolfRatio *= 3;
+					break;
 			}
-			Debug.Log("WolfRatio: " + wolfRatio);
 		}
 	}
 }

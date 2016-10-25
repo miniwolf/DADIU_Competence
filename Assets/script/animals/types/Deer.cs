@@ -10,7 +10,7 @@ namespace Assets.script.animals.types {
 		private bool started;
 		private bool initialized;
 
-		public Deer() : base(1, 4.5f) { // health, speed
+		public Deer() : base(1, 10) { // health, speed
 		}
 
 		protected void Awake() {
