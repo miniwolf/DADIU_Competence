@@ -1,4 +1,5 @@
 ﻿using Assets.script.animals;
+using Assets.script.player;
 using UnityEngine;
 
 namespace Assets.script.controllers.actions.damage {

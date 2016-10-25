@@ -5,6 +5,7 @@ using Assets.script.controllers.actions.damage;
 using Assets.script.controllers.actions.movement;
 using Assets.script.controllers.actions.notice;
 using Assets.script.controllers.handlers;
+using Assets.script.player;
 
 namespace Assets.script.components.factory {
 	public class WolfFactory {

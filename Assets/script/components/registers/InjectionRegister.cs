@@ -2,6 +2,7 @@
 using Assets.script.animals;
 using Assets.script.animals.types;
 using Assets.script.components.factory;
+using Assets.script.player;
 using UnityEngine;
 
 namespace Assets.script.components.registers {
