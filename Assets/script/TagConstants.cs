@@ -12,6 +12,7 @@ namespace Assets.script {
 		public const string TREE_INST = "TreeClone";
 		public const string ROCK_TEMPLATE = "RockTemplate";
 		public const string ROCK_INST = "RockClone";
+		public const string ARROW = "Arrow";
 
 		public static string GAME_STATE_MANAGER = "GameStateManager";
 

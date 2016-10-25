@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityStandardAssets.Characters.FirstPerson;
+using Assets.script;
+using Assets.script.components.registers;
 
-public class PlayerController : MonoBehaviour, GameStateManager.GameStateChangeListener {
+public class PlayerController : MonoBehaviour, GameStateManager.GameStateChangeListener, GameEntity {
 
 
 	private int playerHp;
@@ -10,7 +12,12 @@ public class PlayerController : MonoBehaviour, GameStateManager.GameStateChangeL
 	private FirstPersonController fpController;
 	private LongbowShoot bowController;
 	// Use this for initialization
-	void Start () {
+
+	void Awake() {
+		InjectionRegister.Register(this);
+	}
+
+	void Start() {
 		gameManager = GameObject.FindGameObjectWithTag(Assets.script.TagConstants.GAME_STATE_MANAGER).GetComponent<GameStateManager>();
 		fpController = GetComponent<FirstPersonController>();
 		bowController = GetComponentInChildren<LongbowShoot>();
@@ -21,9 +28,10 @@ public class PlayerController : MonoBehaviour, GameStateManager.GameStateChangeL
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void Update() {
 	
 	}
+
 
 	public void OnGameStateChanged(GameStateManager.GameState oldState, GameStateManager.GameState newState) {
 
@@ -31,5 +39,13 @@ public class PlayerController : MonoBehaviour, GameStateManager.GameStateChangeL
 
 		fpController.enabled = behaviorScriptsEnabled;
 		bowController.enabled = behaviorScriptsEnabled;
+	}
+
+	public string GetTag() {
+		return Assets.script.TagConstants.PLAYER;
+	}
+
+	public void SetupComponents() {
+		// todo 
 	}
 }

@@ -75,7 +75,7 @@ public class LongbowShoot : MonoBehaviour {
 			
 			//Instantiated projectile (arrow)
 			Transform arrow = Instantiate(projectile, arrowSpawn.transform.position, transform.rotation) as Transform;
-			
+			arrow.tag = Assets.script.TagConstants.ARROW;
 			//Add force to projectile, based off power
 			arrow.transform.GetComponent<Rigidbody>().AddForce(transform.forward * power);
 			

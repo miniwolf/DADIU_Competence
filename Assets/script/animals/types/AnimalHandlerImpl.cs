@@ -2,7 +2,7 @@
 using UnityEngine;
 
 namespace Assets.script.animals.types {
-	public class AnimalHandlerImpl : MonoBehaviour, AnimalHandler{
+	public class AnimalHandlerImpl : MonoBehaviour, AnimalHandler {
 		private readonly float speed;
 		protected static Animal animal;
 		protected static Actionable actionableAnimal;
@@ -28,8 +28,7 @@ namespace Assets.script.animals.types {
 			return actionableAnimal;
 		}
 
-		public float GetSpeed()
-		{
+		public float GetSpeed() {
 			return speed;
 		}
 	}

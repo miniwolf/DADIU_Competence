@@ -15,6 +15,7 @@ namespace Assets.script.controllers.actions.damage {
 		}
 
 		public void Execute() {
+			Debug.Log("Taking damage for " + animal);
 			animal.TakeDamage(damage);
 		}
 	}

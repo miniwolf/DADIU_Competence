@@ -11,6 +11,7 @@ namespace Assets.script.colliders {
 		}
 
 		protected void OnTriggerEnter(Collider other) {
+
 			if ( handler.Target != null ) {
 				return;
 			}
