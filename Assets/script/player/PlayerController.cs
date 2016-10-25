@@ -44,7 +44,6 @@ public class PlayerController : MonoBehaviour, GameStateManager.GameStateChangeL
 	}
 
 	public void OnGameStateChanged(GameStateManager.GameState oldState, GameStateManager.GameState newState) {
-
 		bool behaviorScriptsEnabled = newState == GameStateManager.GameState.Playing;
 
 		fpController.enabled = behaviorScriptsEnabled;
@@ -53,6 +52,11 @@ public class PlayerController : MonoBehaviour, GameStateManager.GameStateChangeL
 
 	public void UpdateScore(int score) { 
 		currentScore = score;
+	}
+
+	public void IncrementScore(int score) { 
+		Debug.Log("Player score increment: " + score);
+		currentScore += score;
 	}
 
 	public void UpdateLifeMax(int addLifeMax) {

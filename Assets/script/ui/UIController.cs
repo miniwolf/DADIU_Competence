@@ -22,6 +22,7 @@ public class UIController : MonoBehaviour, GameStateManager.GameStateChangeListe
 		textTimeRemaining = GetTextComponent(Assets.script.TagConstants.UI.TEXT_TIME_REMAINING);
 		textHPAmount = GetTextComponent(Assets.script.TagConstants.UI.TEXT_HP_AMOUNT);
 		textGameMode = GetTextComponent(Assets.script.TagConstants.UI.TEXT_GAME_MODE);
+		textCurrentScore = GetTextComponent(Assets.script.TagConstants.UI.TEXT_CURRENT_SCORE);
 
 		dropdownGameMode = GameObject.FindGameObjectWithTag(Assets.script.TagConstants.UI.DROPDOWN_GAME_MODE).GetComponent<Dropdown>();
 		buttonStartGame = GameObject.FindGameObjectWithTag(Assets.script.TagConstants.UI.BUTTON_START_GAME).GetComponent<Button>();
@@ -60,7 +61,7 @@ public class UIController : MonoBehaviour, GameStateManager.GameStateChangeListe
 	}
 
 	public void UpdateCurrentScore(int score) { 
-		textTimeRemaining.text = "Score: " + score;
+		textCurrentScore.text = "Score: " + score;
 	}
 
 	private GameStateManager.GameMode ResolveGameMode() {

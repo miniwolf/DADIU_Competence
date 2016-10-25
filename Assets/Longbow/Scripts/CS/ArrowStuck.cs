@@ -67,7 +67,7 @@ public class ArrowStuck : MonoBehaviour {
 	}
 
 	void OnCollisionEnter(Collision collision) {
-//		Debug.Log("Arrow hit: " + collision.transform.tag + ", collision.gameObject.tag: " + collision.gameObject.tag);
+		Debug.Log("Arrow hit: " + collision.transform.tag + ", collision.gameObject.tag: " + collision.gameObject.tag);
 		if( GetComponent<Rigidbody>().velocity.magnitude > 5 ) { // arrow is moving
 //			Debug.Log("Moving arrow hit " + collision.transform.tag);
 			AnimalHandler handler = collision.gameObject.GetComponentInParent<AnimalHandler>();
@@ -82,6 +82,9 @@ public class ArrowStuck : MonoBehaviour {
 	}
 
 	private void DisableArrow(Collision collision) {
+
+		Debug.Log("Tag: " + collision.transform.tag + ",  isTrigger: " + collision.gameObject.GetComponent<Collider>().isTrigger);
+
 		GetComponent<BoxCollider>().enabled = false;
 
 		//freeze rigidbody
