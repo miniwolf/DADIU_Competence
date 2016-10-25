@@ -1,7 +1,7 @@
-﻿using System;
+﻿using AssemblyCSharp;
 using UnityEngine;
 
-namespace AssemblyCSharp {
+namespace Assets.script.endless {
 	public class LODMesh {
 		private Mesh mesh;
 		private bool isRequestedMesh;

@@ -1,11 +1,11 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using AssemblyCSharp;
+using UnityEngine;
 
-namespace AssemblyCSharp {
+namespace Assets.script.endless {
 	public class InfinityTerrain : MonoBehaviour {
-		const float moveThreshold = 25f;
-		const float sqrMoveThreshold = moveThreshold * moveThreshold;
+		const float MOVE_THRESHOLD = 25f;
+		const float SQR_MOVE_THRESHOLD = MOVE_THRESHOLD * MOVE_THRESHOLD;
 
 		public LODInfo[] detailLevels;
 		public static float maxViewDst;
@@ -41,7 +41,7 @@ namespace AssemblyCSharp {
 		void Update() {
 			viewerPos = new Vector2(viewer.position.x, viewer.position.z);
 
-			if ( (oldViewerPos - viewerPos).sqrMagnitude > sqrMoveThreshold ) {
+			if ( (oldViewerPos - viewerPos).sqrMagnitude > SQR_MOVE_THRESHOLD ) {
 				oldViewerPos = viewerPos;
 				UpdateChunks();
 			}

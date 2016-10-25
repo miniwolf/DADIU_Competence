@@ -3,6 +3,7 @@ using System.Threading;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Assets.script;
 
 namespace AssemblyCSharp {
 	public class MapGenerator : MonoBehaviour {
@@ -119,7 +120,7 @@ namespace AssemblyCSharp {
 		}
 	}
 
-	[System.Serializable]
+	[Serializable]
 	public struct Terrain {
 		public string name;
 		public float height;

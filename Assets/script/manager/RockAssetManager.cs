@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Assets.script;
 
 public class RockAssetManager : MonoBehaviour, StaticAssetManager {
 
@@ -17,7 +18,7 @@ public class RockAssetManager : MonoBehaviour, StaticAssetManager {
 	private List<AssemblyCSharp.Terrain> acceptableTerrains;
 
 	void Start() {
-		template = GameObject.FindGameObjectWithTag(AssemblyCSharp.TagConstants.ROCK_TEMPLATE);
+		template = GameObject.FindGameObjectWithTag(TagConstants.ROCK_TEMPLATE);
 	}
 
 	public void Init(AssemblyCSharp.Terrain[] terrains, AnimationCurve animCurve, float meshHeight) {
@@ -77,7 +78,7 @@ public class RockAssetManager : MonoBehaviour, StaticAssetManager {
 			GameObject g = (GameObject)Instantiate(template);
 
 			g.transform.parent = transform;
-			g.tag = AssemblyCSharp.TagConstants.TREE_INST;
+			g.tag = TagConstants.TREE_INST;
 
 			// randomize rock
 
