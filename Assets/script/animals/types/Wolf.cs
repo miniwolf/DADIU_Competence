@@ -6,11 +6,14 @@ using UnityEngine;
 namespace Assets.script.animals.types {
 	public class Wolf : AnimalHandlerImpl, GameEntity {
 		private bool started;
+		private bool initialized;
+		public bool Noticed { get; set; }
 
-		public Wolf() : base(4,2) {
+		public Wolf() : base(2, 4) { // health, speed
 		}
 
 		protected void Awake() {
+			initialized = true;
 			InjectionRegister.Register(this);
 		}
 
@@ -19,19 +22,24 @@ namespace Assets.script.animals.types {
 		}
 
 		protected void Update() {
-			actionableAnimal.ExecuteAction(ControllableActions.Move);
+			if ( !initialized ) {
+				Debug.Log("Issue");
+			}
+			actionableAnimal.ExecuteAction(Noticed ? ControllableActions.Hunt : ControllableActions.Move);
 
 			if ( started ) {
 				return;
 			}
 
-			StartCoroutine(DoAction());
+			StartCoroutine(DoAction(this));
 			started = true;
 		}
 
-		private static IEnumerator DoAction() {
+		private static IEnumerator DoAction(Wolf wolf) {
 			while ( true ) {
-				actionableAnimal.ExecuteAction(ControllableActions.Roam);
+				if ( !wolf.Noticed ) {
+					wolf.actionableAnimal.ExecuteAction(ControllableActions.Roam);
+				}
 				yield return new WaitForSeconds(2);
 			}
 		}

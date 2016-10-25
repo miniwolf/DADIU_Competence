@@ -1,5 +1,7 @@
 namespace Assets.script {
 	public static class TagConstants {
+		public const string DEER_TEMPLATE = "DeerTemplate";
+		public const string WOLF_TEMPLATE = "WolfTemplate";
 		public const string WOLF = "Wolf";
 		public const string DEER = "Deer";
 		public const string PLANE = "Plane";
